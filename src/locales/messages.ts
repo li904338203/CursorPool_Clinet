@@ -1,12 +1,20 @@
 export const messages = {
   'zh-CN': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: '概览',
       history: '操作记录',
       settings: '设置'
     },
     dashboard: {
+      greeting: {
+        morning: '早上好',
+        afternoon: '下午好',
+        evening: '晚上好',
+        night: '夜深了',
+        user: '用户',
+        welcome: '欢迎使用 Cursor Agent，让我们开始愉快的编码之旅吧！'
+      },
       deviceInfo: '设备信息',
       machineCode: '机器码',
       currentAccount: '当前账户',
@@ -15,9 +23,9 @@ export const messages = {
       advancedModel: '高级模型使用量',
       normalModel: '普通模型使用量',
       quickActions: '快捷操作',
-      changeAccount: '更换账户',
+      changeAccount: '切换代理账号',
       changeMachineCode: '更换机器码',
-      quickChange: '一键更换(账户+机器码)',
+      quickChange: '切换代理账号（账户+机器码）',
       changeSuccess: '更换成功',
       changeFailed: '更换失败',
       accountChangeSuccess: '账户更换成功',
@@ -26,7 +34,7 @@ export const messages = {
       machineChangeFailed: '机器码更换失败',
       userInfo: '用户信息',
       level: '会员等级',
-      username: 'CP账户邮箱',
+      username: 'CA账户',
       expireTime: '到期时间',
       dailyUsage: '每日使用量',
       cursorInfo: 'Cursor 信息',
@@ -35,11 +43,11 @@ export const messages = {
       notLoggedIn: '未登录',
       unlimited: '无限制',
       memberLevel: {
-        1: '码农',
-        2: '程序员',
-        3: '工程师',
-        4: '架构师',
-        5: '技术总监'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: '发现新版本',
       currentVersion: '当前版本',
@@ -52,8 +60,8 @@ export const messages = {
       cancelSwitch: '取消',
       ccStatus: '本地Curso状态',
       registerTime: '本地 Cursor账户注册时间',
-      email: '本地Cursor邮箱',
-      cpUsage: 'Cursor Pool额度使用量',
+      email: '本地Cursor账户',
+      cpUsage: 'Cursor Agent额度剩余量',
       advancedModelUsage: '高级模型使用量',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
@@ -61,7 +69,7 @@ export const messages = {
     },
     login: {
       title: '登录',
-      emailPlaceholder: '请输入邮箱',
+      emailPlaceholder: '请输入账户',
       passwordPlaceholder: '请输入密码',
       smsCodePlaceholder: '请输入验证码',
       sendCode: '发送验证码',
@@ -69,17 +77,17 @@ export const messages = {
       loginButton: '登录',
       registerButton: '注册',
       forgotPassword: '忘记密码？',
-      emailError: '请输入有效的邮箱地址',
+      emailError: '请输入有效的账户',
       passwordError: '请输入密码',
       loginSuccess: '登录成功',
       loginFailed: '登录失败',
       noAccount: '还没有账户？',
       register: '立即注册',
       hasAccount: '已有账户？去登录',
-      userExists: '该邮箱已注册, 已切换到登录模式',
-      userNotExists: '该邮箱未注册, 请先注册账户',
-      emailInvalid: '请输入有效的邮箱地址',
-      emailUnsupported: '暂不支持该邮箱域名',
+      userExists: '该账户已注册, 已切换到登录模式',
+      userNotExists: '该账户未注册, 请先注册账户',
+      emailInvalid: '请输入有效的账户',
+      emailUnsupported: '暂不支持该账户域名',
       passwordInvalid: '密码必须包含至少8个字符, 包括大小写字母和数字',
     },
     settings: {
@@ -109,7 +117,7 @@ export const messages = {
       pleaseInputActivationCode: '请输入激活码',
       activationSuccess: '激活成功',
       activationFailed: '激活失败',
-      pleaseInputEmail: '请输入账户邮箱',
+      pleaseInputEmail: '请输入账户',
       addSuccess: '添加成功',
       switchSuccess: '切换到账户: {email}',
       deleteSuccess: '删除成功',
@@ -150,11 +158,7 @@ export const messages = {
     },
     about: {
       title: '关于',
-      version: '版本',
-      appName: 'Cursor Pool',
-      copyright: '版权所有',
-      license: '基于 MIT 协议开源，修改和分发时需保留版权信息',
-      allRightsReserved: '保留所有权利',
+      appName: 'Cursor Agent'
     },
     language: {
       title: '语言设置',
@@ -179,13 +183,21 @@ export const messages = {
     }
   },
   'en-US': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'Dashboard',
       history: 'History',
       settings: 'Settings'
     },
     dashboard: {
+      greeting: {
+        morning: 'Good Morning',
+        afternoon: 'Good Afternoon',
+        evening: 'Good Evening',
+        night: 'Good Night',
+        user: 'User',
+        welcome: 'Welcome to Cursor Agent, let\'s start our coding journey!'
+      },
       deviceInfo: 'Device Info',
       machineCode: 'Machine Code',
       currentAccount: 'Current Account',
@@ -194,9 +206,9 @@ export const messages = {
       advancedModel: 'Advanced Model Usage',
       normalModel: 'Normal Model Usage',
       quickActions: 'Quick Actions',
-      changeAccount: 'Change Account',
+      changeAccount: 'Switch Proxy Account',
       changeMachineCode: 'Change Machine Code',
-      quickChange: 'Quick Change (Account + Machine Code)',
+      quickChange: 'Switch Proxy Account (Account + Machine Code)',
       changeSuccess: 'Change Success',
       changeFailed: 'Change Failed',
       accountChangeSuccess: 'Account Change Success',
@@ -214,11 +226,11 @@ export const messages = {
       notLoggedIn: 'Not Logged In',
       unlimited: 'Unlimited',
       memberLevel: {
-        1: 'Coder',
-        2: 'Programmer',
-        3: 'Engineer',
-        4: 'Architect',
-        5: 'Technical Director'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: '发现新版本',
       currentVersion: '当前版本',
@@ -231,8 +243,8 @@ export const messages = {
       cancelSwitch: 'Cancel',
       ccStatus: 'CC Status',
       registerTime: 'Register Time',
-      email: 'Email',
-      cpUsage: 'CP Credits Usage',
+      email: 'Local Cursor Account',
+      cpUsage: 'CA Credits Remaining',
       advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: 'Basic Model Usage',
       cannotGetUsage: 'Cannot Get',
@@ -240,7 +252,7 @@ export const messages = {
     },
     login: {
       title: 'Login',
-      emailPlaceholder: 'Enter your email',
+      emailPlaceholder: 'Enter your account',
       passwordPlaceholder: 'Enter your password',
       smsCodePlaceholder: 'Enter verification code',
       sendCode: 'Send Code',
@@ -248,17 +260,17 @@ export const messages = {
       loginButton: 'Login',
       registerButton: 'Register',
       forgotPassword: 'Forgot Password?',
-      emailError: 'Please enter a valid email address',
+      emailError: 'Please enter a valid account',
       passwordError: 'Please enter your password',
       loginSuccess: 'Login successful',
       loginFailed: 'Login failed',
       noAccount: 'No account?',
       register: 'Register Now',
       hasAccount: 'Already have an account? Login',
-      userExists: 'This email is registered, switched to login mode',
-      userNotExists: 'This email is not registered, please register first',
-      emailInvalid: 'Please enter a valid email address',
-      emailUnsupported: 'This email domain is not supported',
+      userExists: 'This account is registered, switched to login mode',
+      userNotExists: 'This account is not registered, please register first',
+      emailInvalid: 'Please enter a valid account',
+      emailUnsupported: 'This account domain is not supported',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -329,11 +341,7 @@ export const messages = {
     },
     about: {
       title: 'About',
-      version: 'Version',
-      appName: 'Cursor Pool',
-      copyright: 'Copyright',
-      license: 'Open-sourced under MIT License. Copyright notice must be preserved when modified or distributed.',
-      allRightsReserved: 'All Rights Reserved',
+      appName: 'Cursor Agent'
     },
     language: {
       title: 'Language Settings',
@@ -358,7 +366,7 @@ export const messages = {
     }
   },
   'ja-JP': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'ダッシュボード',
       history: '履歴',
@@ -393,11 +401,11 @@ export const messages = {
       notLoggedIn: '未ログイン',
       unlimited: '無制限',
       memberLevel: {
-        1: 'コーダー',
-        2: 'プログラマー',
-        3: 'エンジニア',
-        4: 'アーキテクト',
-        5: 'テクニカルディレクター'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: '発見新バージョン',
       currentVersion: '現在のバージョン',
@@ -410,16 +418,16 @@ export const messages = {
       cancelSwitch: 'キャンセル',
       ccStatus: 'CC状態',
       registerTime: '登録時間',
-      email: 'メールアドレス',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: 'ローカルCursorアカウント',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Cursor 履歴バージョン ダウンロード'
     },
     login: {
       title: 'ログイン',
-      emailPlaceholder: 'メールアドレスを入力してください',
+      emailPlaceholder: 'アカウントを入力してください',
       passwordPlaceholder: 'パスワードを入力してください',
       smsCodePlaceholder: '認証コードを入力してください',
       sendCode: '認証コードを送信',
@@ -427,17 +435,17 @@ export const messages = {
       loginButton: 'ログイン',
       registerButton: '登録',
       forgotPassword: 'パスワードを忘れた場合',
-      emailError: '有効なメールアドレスを入力してください',
+      emailError: '有効なアカウントを入力してください',
       passwordError: 'パスワードを入力してください',
       loginSuccess: 'ログイン成功',
       loginFailed: 'ログイン失敗',
       noAccount: 'アカウントをお持ちでない方は',
       register: 'こちらから登録',
       hasAccount: '既にアカウントをお持ちの方は',
-      userExists: 'このメールアドレスは既に登録されています。ログインモードに切り替えます',
-      userNotExists: 'このメールアドレスは未登録です。先に登録してください',
-      emailInvalid: '有効なメールアドレスを入力してください',
-      emailUnsupported: 'このメールドメインは現在サポートされていません',
+      userExists: 'このアカウントは既に登録されています',
+      userNotExists: 'このアカウントは未登録です',
+      emailInvalid: '有効なアカウントを入力してください',
+      emailUnsupported: 'このアカウントドメインは現在サポートされていません',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -467,7 +475,7 @@ export const messages = {
       pleaseInputActivationCode: 'アクティベーションコードを入力してください',
       activationSuccess: 'アクティベーションに成功しました',
       activationFailed: 'アクティベーションに失敗しました',
-      pleaseInputEmail: 'メールアドレスを入力してください',
+      pleaseInputEmail: 'アカウントを入力してください',
       addSuccess: '追加に成功しました',
       switchSuccess: 'アカウントを切り替えました: {email}',
       deleteSuccess: '削除に成功しました',
@@ -486,9 +494,9 @@ export const messages = {
       updateStatus: '自動更新状態',
       updateDisabled: '無効',
       updateEnabled: '有効',
-      disableUpdate: '更新を無効にする',
-      restoreUpdate: '更新を復元する',
-      clientStatus: 'クライアント状態',
+      disableUpdate: 'Update deaktivieren',
+      restoreUpdate: 'Update wiederherstellen',
+      clientStatus: 'Client-Status',
       clientVerified: '検証済み',
       clientUnverified: '未検証',
       messages: {
@@ -508,11 +516,7 @@ export const messages = {
     },
     about: {
       title: 'バージョン情報',
-      version: 'バージョン',
-      appName: 'Cursor Pool',
-      copyright: '著作権情報',
-      license: 'MITライセンスの下でオープンソース化。変更や配布の際は著作権表示を保持する必要があります。',
-      allRightsReserved: '全著作権所有',
+      appName: 'Cursor Agent'
     },
     language: {
       title: '言語設定',
@@ -537,7 +541,7 @@ export const messages = {
     }
   },
   'fr-FR': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'Tableau de bord',
       history: 'Historique',
@@ -572,11 +576,11 @@ export const messages = {
       notLoggedIn: 'Non connecté',
       unlimited: 'Illimité',
       memberLevel: {
-        1: 'Codeur',
-        2: 'Programmeur',
-        3: 'Ingénieur',
-        4: 'Architecte',
-        5: 'Directeur technique'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: 'Découvrez la nouvelle version',
       currentVersion: 'Version actuelle',
@@ -589,16 +593,16 @@ export const messages = {
       cancelSwitch: 'Annuler',
       ccStatus: 'État CC',
       registerTime: 'Heure d\'inscription',
-      email: 'Email',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: 'Compte Cursor local',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Télécharger les versions historiques de Cursor'
     },
     login: {
       title: 'Connexion',
-      emailPlaceholder: 'Entrez votre adresse e-mail',
+      emailPlaceholder: 'Entrez votre compte',
       passwordPlaceholder: 'Entrez votre mot de passe',
       smsCodePlaceholder: 'Entrez le code de vérification',
       sendCode: 'Envoyer le code',
@@ -606,17 +610,17 @@ export const messages = {
       loginButton: 'Connexion',
       registerButton: 'Inscription',
       forgotPassword: 'Mot de passe oublié ?',
-      emailError: 'Veuillez entrer une adresse e-mail valide',
+      emailError: 'Veuillez entrer un compte valide',
       passwordError: 'Veuillez entrer votre mot de passe',
       loginSuccess: 'Connexion réussie',
       loginFailed: 'Connexion échouée',
       noAccount: 'Pas de compte ?',
       register: 'S\'inscrire maintenant',
       hasAccount: 'Vous avez déjà un compte ? Connectez-vous',
-      userExists: 'Cet email est déjà enregistré, passage en mode connexion',
-      userNotExists: 'Cet email n\'est pas enregistré, veuillez vous inscrire d\'abord',
-      emailInvalid: 'Veuillez entrer une adresse e-mail valide',
-      emailUnsupported: 'Ce domaine e-mail n\'est pas supporté',
+      userExists: 'Ce compte est déjà enregistré',
+      userNotExists: 'Ce compte n\'est pas enregistré',
+      emailInvalid: 'Veuillez entrer un compte valide',
+      emailUnsupported: 'Ce domaine de compte n\'est pas pris en charge',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -624,7 +628,7 @@ export const messages = {
       activationCode: 'Code d\'activation',
       activate: 'Activer',
       changePassword: 'Changer le mot de passe',
-      currentPassword: 'Mot de passe actuel',
+      currentPassword: 'Current Password',
       newPassword: 'Nouveau mot de passe',
       confirmPassword: 'Confirmer le mot de passe',
       about: 'À propos'
@@ -646,7 +650,7 @@ export const messages = {
       pleaseInputActivationCode: 'Veuillez saisir le code d\'activation',
       activationSuccess: 'Activation réussie',
       activationFailed: 'Activation échouée',
-      pleaseInputEmail: 'Veuillez saisir l\'email',
+      pleaseInputEmail: 'Veuillez saisir le compte',
       addSuccess: 'Ajout réussi',
       switchSuccess: 'Changement de compte effectué: {email}',
       deleteSuccess: 'Suppression réussie',
@@ -676,7 +680,7 @@ export const messages = {
         applyHookSuccess: 'Hook appliqué avec succès',
         restoreHookSuccess: 'Hook restauré avec succès',
         cursorRunning: 'Cursor est en cours d\'exécution, veuillez sauvegarder votre travail avant de continuer !',
-        forceKillConfirm: 'J\'ai sauvegardé, forcer la fermeture'
+        forceKillConfirm: 'J\'ai sauvegardé, forzar cierre'
       },
       history: {
         disableUpdate: 'Désactiver la mise à jour automatique',
@@ -687,11 +691,7 @@ export const messages = {
     },
     about: {
       title: 'À propos',
-      version: 'Version',
-      appName: 'Cursor Pool',
-      copyright: 'Copyright',
-      license: 'Open-sourced under MIT License. Copyright notice must be preserved when modified or distributed.',
-      allRightsReserved: 'All Rights Reserved',
+      appName: 'Cursor Agent'
     },
     language: {
       title: 'Paramètres de langue',
@@ -709,7 +709,7 @@ export const messages = {
     }
   },
   'de-DE': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'Übersicht',
       history: 'Verlauf',
@@ -744,11 +744,11 @@ export const messages = {
       notLoggedIn: 'Nicht angemeldet',
       unlimited: 'Unbegrenzt',
       memberLevel: {
-        1: 'Coder',
-        2: 'Programmierer',
-        3: 'Ingenieur',
-        4: 'Architekt',
-        5: 'Technischer Direktor'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: 'Neue Version entdeckt',
       currentVersion: 'Aktuelle Version',
@@ -757,16 +757,16 @@ export const messages = {
       downloadNow: 'Jetzt herunterladen',
       ccStatus: 'CC Status',
       registerTime: 'Registrierungszeit',
-      email: 'Email',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: 'Lokales Cursor-Konto',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Cursor Historische Versionen Herunterladen'
     },
     login: {
       title: 'Anmeldung',
-      emailPlaceholder: 'E-Mail-Adresse eingeben',
+      emailPlaceholder: 'Konto eingeben',
       passwordPlaceholder: 'Passwort eingeben',
       smsCodePlaceholder: 'Verifizierungscode eingeben',
       sendCode: 'Verifizierungscode senden',
@@ -774,17 +774,17 @@ export const messages = {
       loginButton: 'Anmelden',
       registerButton: 'Registrieren',
       forgotPassword: 'Passwort vergessen?',
-      emailError: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+      emailError: 'Bitte geben Sie ein gültiges Konto ein',
       passwordError: 'Bitte geben Sie Ihr Passwort ein',
       loginSuccess: 'Anmeldung erfolgreich',
       loginFailed: 'Anmeldung fehlgeschlagen',
       noAccount: 'Kein Konto?',
       register: 'Jetzt registrieren',
       hasAccount: 'Sie haben bereits ein Konto? Anmelden',
-      userExists: 'Diese E-Mail ist bereits registriert, Wechsel zum Anmeldemodus',
-      userNotExists: 'Diese E-Mail ist nicht registriert, bitte registrieren Sie sich zuerst',
-      emailInvalid: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
-      emailUnsupported: 'Dieser E-Mail-Domain ist derzeit keine Unterstützung verfügbar',
+      userExists: 'Dieses Konto ist bereits registriert',
+      userNotExists: 'Dieses Konto ist nicht registriert',
+      emailInvalid: 'Bitte geben Sie ein gültiges Konto ein',
+      emailUnsupported: 'Diese Konto-Domain wird nicht unterstützt',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -814,7 +814,7 @@ export const messages = {
       pleaseInputActivationCode: 'Bitte Aktivierungscode eingeben',
       activationSuccess: 'Aktivierung erfolgreich',
       activationFailed: 'Aktivierung fehlgeschlagen',
-      pleaseInputEmail: 'Bitte E-Mail eingeben',
+      pleaseInputEmail: 'Bitte Konto eingeben',
       addSuccess: 'Erfolgreich hinzugefügt',
       switchSuccess: 'Zu Konto gewechselt: {email}',
       deleteSuccess: 'Erfolgreich gelöscht',
@@ -829,7 +829,7 @@ export const messages = {
       hookApplied: 'Angewendet',
       hookNotApplied: 'Nicht angewendet',
       applyHook: 'Hook anwenden',
-      restoreHook: 'Hook wiederherstellen',
+      restoreHook: 'Wiederherstellen des Hooks',
       updateStatus: 'Automatischer Update-Status',
       updateDisabled: 'Deaktiviert',
       updateEnabled: 'Aktiviert',
@@ -855,11 +855,7 @@ export const messages = {
     },
     about: {
       title: 'Über',
-      version: 'Version',
-      appName: 'Cursor Pool',
-      copyright: 'Copyright',
-      license: 'Open-sourced under MIT License. Copyright notice must be preserved when modified or distributed.',
-      allRightsReserved: 'All Rights Reserved',
+      appName: 'Cursor Agent'
     },
     language: {
       title: 'Spracheinstellungen',
@@ -873,11 +869,11 @@ export const messages = {
       cursorRunning: 'Cursor läuft',
       cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
       closingCursor: 'Cursor schließen...',
-      forgotPassword: 'Passwort vergessen?'
+      forgotPassword: 'Mot de passe oublié?'
     }
   },
   'ko-KR': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: '대시보드',
       history: '기록',
@@ -912,11 +908,11 @@ export const messages = {
       notLoggedIn: '로그인하지 않음',
       unlimited: '무제한',
       memberLevel: {
-        1: '코더',
-        2: '프로그래머',
-        3: '엔지니어',
-        4: '아키텍트',
-        5: '기술 이사'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: '새로운 버전 발견',
       currentVersion: '현재 버전',
@@ -925,16 +921,16 @@ export const messages = {
       downloadNow: '지금 다운로드',
       ccStatus: 'CC 상태',
       registerTime: '등록 시간',
-      email: '이메일',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: '로컬 Cursor 계정',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Cursor 이전 버전 다운로드'
     },
     login: {
       title: '로그인',
-      emailPlaceholder: '이메일 주소를 입력하세요',
+      emailPlaceholder: '계정을 입력하세요',
       passwordPlaceholder: '비밀번호를 입력하세요',
       smsCodePlaceholder: '인증 코드를 입력하세요',
       sendCode: '인증 코드 전송',
@@ -942,17 +938,17 @@ export const messages = {
       loginButton: '로그인',
       registerButton: '등록',
       forgotPassword: '비밀번호를 잊으셨나요?',
-      emailError: '유효한 이메일 주소를 입력하세요',
+      emailError: '유효한 계정을 입력하세요',
       passwordError: '비밀번호를 입력하세요',
       loginSuccess: '로그인 성공',
       loginFailed: '로그인 실패',
       noAccount: '계정이 없으신가요?',
       register: '지금 가입하기',
       hasAccount: '이미 계정이 있으신가요? 로그인',
-      userExists: '이메일이 이미 등록되어 있습니다. 로그인 모드로 전환합니다',
-      userNotExists: '등록되지 않은 이메일입니다. 먼저 회원가입을 해주세요',
-      emailInvalid: '유효한 이메일 주소를 입력하세요',
-      emailUnsupported: '이 이메인은 현재 지원되지 않습니다',
+      userExists: '이 계정은 이미 등록되어 있습니다',
+      userNotExists: '이 계정은 등록되어 있지 않습니다',
+      emailInvalid: '유효한 계정을 입력하세요',
+      emailUnsupported: '이 계정 도메인은 지원되지 않습니다',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -982,7 +978,7 @@ export const messages = {
       pleaseInputActivationCode: '활성화 코드를 입력해주세요',
       activationSuccess: '활성화 성공',
       activationFailed: '활성화 실패',
-      pleaseInputEmail: '이메일을 입력해주세요',
+      pleaseInputEmail: '계정을 입력해주세요',
       addSuccess: '추가 성공',
       switchSuccess: '계정 전환 완료: {email}',
       deleteSuccess: '삭제 성공',
@@ -1002,7 +998,7 @@ export const messages = {
       updateDisabled: '비활성화',
       updateEnabled: '활성화',
       disableUpdate: '업데이트 비활성화',
-      restoreUpdate: '업데이트 복원',
+      restoreUpdate: '자동 업데이트 복원',
       clientStatus: '클라이언트 상태',
       clientVerified: '검증됨',
       clientUnverified: '미검증',
@@ -1023,11 +1019,7 @@ export const messages = {
     },
     about: {
       title: '정보',
-      version: '버전',
-      appName: 'Cursor Pool',
-      copyright: '저작권 정보',
-      license: 'MIT 라이센스를 기반으로 오픈소스화되었습니다. 수정 또는 배포 시 저작권 표시를 유지해야 합니다.',
-      allRightsReserved: '전 저작권 보유',
+      appName: 'Cursor Agent'
     },
     language: {
       title: '언어 설정',
@@ -1038,14 +1030,14 @@ export const messages = {
       copySuccess: '복사 성공',
       copyFailed: '복사 실패',
       forceClose: '저장하고 강제로 닫기',
-      cursorRunning: 'Cursor 실행 중',
+      cursorRunning: 'Cursor 가 동작 중',
       cursorRunningMessage: '변경되지 않은 프로젝트를 저장한 후 계속하세요!',
-      closingCursor: 'Cursor 닫는 중...',
+      closingCursor: 'Cursor를 닫는 중...',
       forgotPassword: '비밀번호를 잊으셨나요?'
     }
   },
   'ru-RU': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'Обзор',
       history: 'История',
@@ -1080,11 +1072,11 @@ export const messages = {
       notLoggedIn: 'Не авторизован',
       unlimited: 'Неограниченный',
       memberLevel: {
-        1: 'Кодер',
-        2: 'Программист',
-        3: 'Инженер',
-        4: 'Архитектор',
-        5: 'Технический директор'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: 'Обнаружена новая версия',
       currentVersion: 'Текущая версия',
@@ -1093,16 +1085,16 @@ export const messages = {
       downloadNow: 'Скачать сейчас',
       ccStatus: 'Статус CC',
       registerTime: 'Время регистрации',
-      email: 'Email',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: 'Локальная учетная запись Cursor',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Скачать исторические версии Cursor'
     },
     login: {
       title: 'Вход',
-      emailPlaceholder: 'Введите адрес электронной почты',
+      emailPlaceholder: 'Введите учетную запись',
       passwordPlaceholder: 'Введите пароль',
       smsCodePlaceholder: 'Введите код подтверждения',
       sendCode: 'Отправить код',
@@ -1110,17 +1102,17 @@ export const messages = {
       loginButton: 'Вход',
       registerButton: 'Регистрация',
       forgotPassword: 'Забыли пароль?',
-      emailError: 'Введите действительный адрес электронной почты',
+      emailError: 'Введите действительную учетную запись',
       passwordError: 'Введите пароль',
       loginSuccess: 'Вход успешен',
       loginFailed: 'Вход не удался',
       noAccount: 'Нет аккаунта?',
       register: 'Зарегистрироваться сейчас',
       hasAccount: 'Уже есть аккаунт? Войти',
-      userExists: 'Этот email уже зарегистрирован, переключение в режим входа',
-      userNotExists: 'Этот email не зарегистрирован, пожалуйста, зарегистрируйтесь',
-      emailInvalid: 'Введите действительный адрес электронной почты',
-      emailUnsupported: 'Этот email-домен не поддерживается',
+      userExists: 'Эта учетная запись уже зарегистрирована',
+      userNotExists: 'Эта учетная запись не зарегистрирована',
+      emailInvalid: 'Введите действительную учетную запись',
+      emailUnsupported: 'Этот домен учетной записи не поддерживается',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -1150,7 +1142,7 @@ export const messages = {
       pleaseInputActivationCode: 'Пожалуйста, введите код активации',
       activationSuccess: 'Активация успешна',
       activationFailed: 'Активация не удалась',
-      pleaseInputEmail: 'Пожалуйста, введите email',
+      pleaseInputEmail: 'Пожалуйста, введите учетную запись',
       addSuccess: 'Успешно добавлено',
       switchSuccess: 'Переключено на аккаунт: {email}',
       deleteSuccess: 'Успешно удалено',
@@ -1170,8 +1162,8 @@ export const messages = {
       updateDisabled: 'Отключено',
       updateEnabled: 'Включено',
       disableUpdate: 'Отключить обновление',
-      restoreUpdate: 'Восстановить обновление',
-      clientStatus: 'Статус клиента',
+      restoreUpdate: 'Restaurar обновление',
+      clientStatus: 'Эtat du client',
       clientVerified: 'Проверено',
       clientUnverified: 'Не проверено',
       messages: {
@@ -1180,22 +1172,18 @@ export const messages = {
         applyHookSuccess: 'Hook успешно применен',
         restoreHookSuccess: 'Hook успешно восстановлен',
         cursorRunning: 'Cursor запущен, пожалуйста, сохраните работу перед продолжением!',
-        forceKillConfirm: 'Я сохранил, принудительно закрыть'
+        forceKillConfirm: 'He guardado, forzar cierre'
       },
       history: {
         disableUpdate: 'Отключить автообновление',
-        restoreUpdate: 'Восстановить автообновление',
+        restoreUpdate: 'Restaurar автообновление',
         applyHook: 'Применить hook',
         restoreHook: 'Restaurar hook'
       }
     },
     about: {
       title: 'О программе',
-      version: 'Версия',
-      appName: 'Cursor Pool',
-      copyright: 'Copyright',
-      license: 'Open-sourced under MIT License. Copyright notice must be preserved when modified or distributed.',
-      allRightsReserved: 'All Rights Reserved',      
+      appName: 'Cursor Agent'
     },
     language: {
       title: 'Язык',
@@ -1213,7 +1201,7 @@ export const messages = {
     }
   },
   'es-AR': {
-    appName: 'Cursor Pool',
+    appName: 'Cursor Agent',
     menu: {
       dashboard: 'Panel',
       history: 'Historial',
@@ -1248,11 +1236,11 @@ export const messages = {
       notLoggedIn: 'No conectado',
       unlimited: 'Ilimitado',
       memberLevel: {
-        1: 'Código',
-        2: 'Programador',
-        3: 'Ingeniero',
-        4: 'Arquitecto',
-        5: 'Director técnico'
+        1: 'V1',
+        2: 'V2',
+        3: 'V3',
+        4: 'V4',
+        5: 'V5'
       },
       newVersionAvailable: 'Nueva versión encontrada',
       currentVersion: 'Versión actual',
@@ -1261,16 +1249,16 @@ export const messages = {
       downloadNow: 'Descargar ahora',
       ccStatus: 'Estado CC',
       registerTime: 'Hora de registro',
-      email: 'Email',
-      cpUsage: 'CP积分使用量',
-      advancedModelUsage: '高级模型使用量',
+      email: 'Cuenta local de Cursor',
+      cpUsage: 'Cursor Agent额度剩余量',
+      advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
       cannotGetUsage: '无法获取',
       cursorHistoryDownload: 'Descargar versiones históricas de Cursor'
     },
     login: {
       title: 'Iniciar sesión',
-      emailPlaceholder: 'Ingrese su correo electrónico',
+      emailPlaceholder: 'Ingrese su cuenta',
       passwordPlaceholder: 'Ingrese su contraseña',
       smsCodePlaceholder: 'Ingrese el código de verificación',
       sendCode: 'Enviar código',
@@ -1278,17 +1266,17 @@ export const messages = {
       loginButton: 'Iniciar sesión',
       registerButton: 'Registrarse',
       forgotPassword: '¿Olvidó su contraseña?',
-      emailError: 'Ingrese una dirección de correo electrónico válida',
+      emailError: 'Ingrese una cuenta válida',
       passwordError: 'Ingrese su contraseña',
       loginSuccess: 'Iniciar sesión exitoso',
       loginFailed: 'Iniciar sesión fallido',
       noAccount: '¿No tienes cuenta?',
       register: 'Regístrate ahora',
       hasAccount: '¿Ya tienes cuenta? Iniciar sesión',
-      userExists: 'Este correo ya está registrado, cambio a modo de inicio de sesión',
-      userNotExists: 'Este correo no está registrado, por favor regístrese primero',
-      emailInvalid: 'Ingrese una dirección de correo electrónico válida',
-      emailUnsupported: 'Este dominio de correo electrónico no es compatible',
+      userExists: 'Esta cuenta ya está registrada',
+      userNotExists: 'Esta cuenta no está registrada',
+      emailInvalid: 'Ingrese una cuenta válida',
+      emailUnsupported: 'Este dominio de cuenta no es compatible',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
     },
     settings: {
@@ -1318,7 +1306,7 @@ export const messages = {
       pleaseInputActivationCode: 'Por favor ingrese el código de activación',
       activationSuccess: 'Activation exitosa',
       activationFailed: 'Activation fallida',
-      pleaseInputEmail: 'Por favor ingrese el correo electrónico',
+      pleaseInputEmail: 'Por favor ingrese la cuenta',
       addSuccess: 'Agregado exitosamente',
       switchSuccess: 'Cambio de cuenta exitoso: {email}',
       deleteSuccess: 'Eliminado exitosamente',
@@ -1359,11 +1347,7 @@ export const messages = {
     },
     about: {
       title: 'Acerca de',
-      version: 'Versión',
-      appName: 'Cursor Pool',
-      copyright: 'Copyright',
-      license: 'Open-sourced under MIT License. Copyright notice must be preserved when modified or distributed.',
-      allRightsReserved: 'All Rights Reserved',
+      appName: 'Cursor Agent'
     },
     language: {
       title: 'Configuración de idioma',
@@ -1377,7 +1361,7 @@ export const messages = {
       cursorRunning: 'Cursor en ejecución',
       cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
       closingCursor: 'Cerrando Cursor...',
-      forgotPassword: '¿Olvidó su contraseña?'
+      forgotPassword: 'Mot de passe oublié?'
     }
   }
 } as const

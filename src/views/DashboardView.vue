@@ -16,7 +16,6 @@ import {
     checkUpdateDisabled,
     checkHookStatus,
     checkIsWindows,
-    getDisclaimer,
     applyHook,
     activate,
     closeCursor,
@@ -49,6 +48,15 @@ interface DeviceInfoState {
   hookStatus: boolean | null
 }
 
+// 获取当前时间段的问候语
+function getTimeOfDay() {
+  const hour = new Date().getHours()
+  if (hour < 6) return '夜深了'
+  if (hour < 12) return '早上好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
+}
+
 // 格式化日期
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -79,22 +87,13 @@ const getUsagePercentage = (used: number, total: number) => {
 }
 
 // 会员等级映射
-const levelMap: Record<number, { name: string; type: 'default' | 'info' | 'success' | 'warning' | 'error' }> = {
-  1: { name: i18n.value.dashboard.memberLevel[1], type: 'default' },
-  2: { name: i18n.value.dashboard.memberLevel[2], type: 'info' },
-  3: { name: i18n.value.dashboard.memberLevel[3], type: 'success' },
-  4: { name: i18n.value.dashboard.memberLevel[4], type: 'warning' },
-  5: { name: i18n.value.dashboard.memberLevel[5], type: 'error' }
+const levelMap: Record<number, { name: string; type: 'default' | 'info' | 'success' | 'warning' | 'error' | 'primary' }> = {
+  1: { name: i18n.value.dashboard.memberLevel[1], type: 'primary' },
+  2: { name: i18n.value.dashboard.memberLevel[2], type: 'primary' },
+  3: { name: i18n.value.dashboard.memberLevel[3], type: 'primary' },
+  4: { name: i18n.value.dashboard.memberLevel[4], type: 'primary' },
+  5: { name: i18n.value.dashboard.memberLevel[5], type: 'primary' }
 }
-
-// 普通账户使用量百分比
-const accountUsagePercentage = computed(() => {
-  if (!deviceInfo.value.userInfo?.totalCount) return 0
-  return getUsagePercentage(
-    deviceInfo.value.userInfo.usedCount,
-    deviceInfo.value.userInfo.totalCount
-  )
-})
 
 // Cursor高级模型使用量百分比
 const cursorGpt4Percentage = computed(() => {
@@ -114,15 +113,20 @@ const cursorGpt35Percentage = computed(() => {
 // 获取用户信息
 const fetchUserInfo = async () => {
   try {
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) {
-      throw new Error('未找到 API Key')
+    // 只使用accessToken
+    const accessToken = localStorage.getItem('accessToken');
+    
+    if (!accessToken) {
+      throw new Error('未找到 Token');
     }
-    const info = await getUserInfo(apiKey)
-    deviceInfo.value.userInfo = info
+    
+    // 使用accessToken
+    const info = await getUserInfo(accessToken);
+    deviceInfo.value.userInfo = info;
   } catch (error) {
-    localStorage.removeItem('apiKey')
-    console.error('获取用户信息失败:', error)
+    // 如果获取失败，清除token
+    localStorage.removeItem('accessToken');
+    console.error('获取用户信息失败:', error);
   }
 }
 
@@ -364,8 +368,8 @@ const handleCancelSwitch = () => {
 // 修改账户切换执行函数
 const executeAccountSwitch = async (force_kill: boolean = false) => {
   try {
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) {
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
       message.error(i18n.value.message.pleaseInputEmail)
       return
     }
@@ -379,7 +383,7 @@ const executeAccountSwitch = async (force_kill: boolean = false) => {
     }
 
     // 获取账号信息并执行实际的切换
-    const accountInfo = await getAccount(apiKey)
+    const accountInfo = await getAccount(accessToken)
     
     if (!accountInfo.email || !accountInfo.token) {
       message.error(i18n.value.dashboard.accountChangeFailed)
@@ -547,8 +551,8 @@ const compareVersions = (v1: string, v2: string) => {
 // 检查版本更新
 const checkUpdate = async () => {
   try {
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) return
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) return
     
     // 检查上次更新提示的时间
     const lastCheckTime = localStorage.getItem('last_version_check_time')
@@ -643,19 +647,13 @@ onMounted(async () => {
     // 检查更新状态
     updateDisabled.value = await checkUpdateDisabled()
     
-    // 检查是否需要显示免责声明
-    const disclaimerAccepted = localStorage.getItem('disclaimer_accepted')
-    if (disclaimerAccepted !== 'true') {
-      await fetchDisclaimer()
-      showDisclaimerModal.value = true
-    } 
-    // 否则检查是否需要显示引导
-    else if (!localStorage.getItem('dashboard_tour_shown')) {
-      // 检查apiKey是否存在
-      const apiKey = localStorage.getItem('apiKey')
+    // 检查是否需要显示引导
+    if (!localStorage.getItem('dashboard_tour_shown')) {
+      // 检查accessToken是否存在
+      const accessToken = localStorage.getItem('accessToken')
       
-      // 只有当apiKey存在时才显示引导
-      if (apiKey) {
+      // 只有当accessToken存在时才显示引导
+      if (accessToken) {
         setTimeout(() => {
           startTour()
         }, 500)
@@ -727,13 +725,6 @@ const handleHistoryDownload = async () => {
   }
 }
 
-// 添加免责声明相关状态
-const showDisclaimerModal = ref(false)
-const disclaimerContent = ref('')
-const disclaimerCountdown = ref(3)
-const canConfirmDisclaimer = ref(false)
-const disclaimerLoading = ref(true)
-
 // 添加引导相关状态
 const shouldShowTour = ref(false)
 
@@ -757,44 +748,6 @@ const machineCodeLoading = ref(false)
 const accountSwitchLoading = ref(false)
 const quickChangeLoading = ref(false)
 
-// 获取免责声明
-const fetchDisclaimer = async () => {
-  try {
-    disclaimerLoading.value = true
-    const { content } = await getDisclaimer()
-    disclaimerContent.value = content
-    
-    // 启动倒计时
-    const timer = setInterval(() => {
-      disclaimerCountdown.value--
-      if (disclaimerCountdown.value <= 0) {
-        canConfirmDisclaimer.value = true
-        clearInterval(timer)
-      }
-    }, 0)
-  } catch (error) {
-    console.error('获取免责声明失败:', error)
-  } finally {
-    disclaimerLoading.value = false
-  }
-}
-
-// 修改免责声明确认处理函数
-const handleConfirmDisclaimer = () => {
-  localStorage.setItem('disclaimer_accepted', 'true')
-  showDisclaimerModal.value = false
-  
-  // 检查apiKey是否存在
-  const apiKey = localStorage.getItem('api_key') || localStorage.getItem('cursor_api_key')
-  
-  // 只有当apiKey存在时才显示引导
-  if (apiKey && !localStorage.getItem('dashboard_tour_shown')) {
-    setTimeout(() => {
-      startTour()
-    }, 500)
-  }
-}
-
 // 开始引导
 const startTour = () => {
   shouldShowTour.value = true
@@ -817,14 +770,14 @@ const handleActivate = async () => {
     activationLoading.value = true
     activationError.value = ''
     
-    // 获取API密钥
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) {
-      throw new Error('未找到API密钥，请重新登录')
+    // 获取token
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
+      throw new Error('未找到Token，请重新登录')
     }
     
     // 调用激活API
-    await activate(apiKey, activationCode.value)
+    await activate(accessToken, activationCode.value)
     
     // 记录操作历史
     addHistoryRecord(
@@ -857,9 +810,9 @@ const handleActivate = async () => {
 }
 
 // 监听模态框状态变化，如果有模态框显示，则隐藏引导
-watch([showUpdateModal, showAdminPrivilegeModal, showCursorRunningModal, showDisclaimerModal], 
-  ([updateModal, adminModal, cursorModal, disclaimerModal]) => {
-    if (updateModal || adminModal || cursorModal || disclaimerModal) {
+watch([showUpdateModal, showAdminPrivilegeModal, showCursorRunningModal], 
+  ([updateModal, adminModal, cursorModal]) => {
+    if (updateModal || adminModal || cursorModal) {
       shouldShowTour.value = false
     }
   }
@@ -869,359 +822,346 @@ watch([showUpdateModal, showAdminPrivilegeModal, showCursorRunningModal, showDis
 const formValue = ref({
   activationCode: ''
 })
+
+// 欢迎语
+const greeting = computed(() => {
+  const timeGreeting = getTimeOfDay()
+  const username = deviceInfo.value.userInfo?.username || '用户'
+  return `${timeGreeting}，${username}`
+})
 </script>
 
 <template>
-  <n-space vertical size="large">
-    <n-grid :cols="2" :x-gap="24" style="display: grid; grid-template-columns: repeat(2, 1fr);">
-      <!-- 用户信息卡片 -->
-      <n-grid-item style="display: grid;">
-        <n-card :title="i18n.dashboard.userInfo" class="user-info-card" style="height: 100%; user-select: none;">
+  <div class="dashboard">
+    <n-space vertical :size="12">
+      <n-card class="welcome-card">
+        <div class="welcome-content">
+          <h2 class="greeting">{{ greeting }}</h2>
+          <p class="welcome-text">欢迎使用Cursor Agent代理，让我们开始愉快的编码之旅吧！</p>
+        </div>
+      </n-card>
+
+      <n-space vertical size="large">
+        <n-grid :cols="2" :x-gap="24" style="display: grid; grid-template-columns: repeat(2, 1fr);">
+          <!-- 用户信息卡片 -->
+          <n-grid-item style="display: grid;">
+            <n-card :title="i18n.dashboard.userInfo" class="user-info-card" style="height: 100%; user-select: none;">
+              <n-space vertical>
+                <n-space vertical :size="12" style="user-select: none;">
+                  <n-space :size="8" style="line-height: 1.2;" class="user-info-username">
+                    <span style="width: 70px">{{ i18n.dashboard.username }}</span>
+                    <n-space :size="4" align="center">
+                      <span 
+                        style="font-size: 14px; cursor: pointer;" 
+                        @click="deviceInfo.userInfo?.username && copyText(deviceInfo.userInfo.username)"
+                      >{{ deviceInfo.userInfo?.username }}</span>
+                      <n-tag :type="levelMap[deviceInfo.userInfo?.level || 1].type" size="tiny" style="transform: scale(0.9)">
+                        {{ levelMap[deviceInfo.userInfo?.level || 1].name }}
+                      </n-tag>
+                    </n-space>
+                  </n-space>
+
+                  <n-divider style="margin: 0" />
+
+                  <n-space :size="8" style="line-height: 1.2;" class="user-info-email">
+                    <span style="width: 70px">{{ i18n.dashboard.email }}</span>
+                    <n-space :size="4" align="center">
+                      <span 
+                        style="font-size: 14px; cursor: pointer;" 
+                        @click="deviceInfo.cursorInfo.userInfo?.email && copyText(deviceInfo.cursorInfo.userInfo?.email)"
+                      >{{ deviceInfo.cursorInfo.userInfo?.email || '未绑定' }}</span>
+                      <n-tag :type="deviceInfo.cursorInfo.userInfo?.email_verified ? 'success' : 'warning'" size="tiny" style="transform: scale(0.9)">
+                        {{ deviceInfo.cursorInfo.userInfo?.email_verified ? i18n.systemControl.clientVerified : i18n.systemControl.clientUnverified }}
+                      </n-tag>
+                    </n-space>
+                  </n-space>
+                  <n-space :size="8" style="line-height: 1.2;" class="user-info-cc-status">
+                    <span style="width: 70px">{{ i18n.dashboard.ccStatus }}</span>
+                    <n-tag :type="deviceInfo.hookStatus === true ? 'success' : 'error'" size="small">
+                      {{ deviceInfo.hookStatus === true ? i18n.systemControl.hookApplied : i18n.systemControl.hookNotApplied }}
+                    </n-tag>
+                  </n-space>
+                  <n-space :size="8" style="line-height: 1.2;" class="user-info-register-time">
+                    <span style="width: 70px">{{ i18n.dashboard.registerTime }}</span>
+                    <span 
+                      style="font-size: 14px; cursor: pointer;" 
+                      @click="copyText(deviceInfo.cursorInfo.usage?.startOfMonth ? formatDate(deviceInfo.cursorInfo.usage.startOfMonth) : '')"
+                    >{{ deviceInfo.cursorInfo.usage?.startOfMonth ? formatDate(deviceInfo.cursorInfo.usage.startOfMonth) : '未知' }}</span>
+                  </n-space>
+                  <span 
+                    style="font-size: 12px; color: #999; word-break: break-all; text-align: center; cursor: pointer;" 
+                    @click="copyText(deviceInfo.machineCode)"
+                    class="user-info-machine-code"
+                  >{{ deviceInfo.machineCode }}</span>
+                </n-space>
+              </n-space>
+            </n-card>
+          </n-grid-item>
+
+          <!-- 使用统计卡片 -->
+          <n-grid-item style="display: grid;">
+            <n-card :title="i18n.dashboard.usageStats" style="height: 100%; user-select: none;">
+              <n-space vertical :size="24" style="height: 100%; justify-content: space-around;">
+                <!-- 账户使用统计 -->
+                <n-space vertical :size="8" class="cursor-pool-usage">
+                  <n-space justify="space-between">
+                    <span>{{ i18n.dashboard.cpUsage }}</span>
+                    <n-space :size="0">
+                      <n-number-animation 
+                        :from="0" 
+                        :to="(deviceInfo.userInfo?.balance || 0) + (deviceInfo.userInfo?.bonus || 0)"
+                        :duration="1000"
+                      />
+                    </n-space>
+                  </n-space>
+                  <n-progress
+                    type="line"
+                    status="success"
+                    :percentage="100"
+                    :show-indicator="false"
+                    :height="12"
+                    :border-radius="6"
+                    :processing="loading"
+                  />
+                </n-space>
+
+                <!-- Cursor GPT-4 使用统计 -->
+                <n-space vertical :size="8" class="advanced-model-usage">
+                  <n-space justify="space-between">
+                    <span>{{ i18n.dashboard.advancedModelUsage }}</span>
+                    <n-space v-if="deviceInfo.cursorInfo.usage" :size="0">
+                      <n-number-animation 
+                        :from="0"
+                        :to="deviceInfo.cursorInfo.usage['gpt-4']?.numRequests || 0"
+                        :duration="1000"
+                      />
+                      <span>/{{ deviceInfo.cursorInfo.usage['gpt-4']?.maxRequestUsage || 0 }}</span>
+                    </n-space>
+                    <span v-else>{{ i18n.dashboard.cannotGetUsage }}</span>
+                  </n-space>
+                  <n-progress
+                    type="line"
+                    status="success"
+                    :percentage="cursorGpt4Percentage"
+                    :show-indicator="false"
+                    :height="12"
+                    :border-radius="6"
+                    :processing="loading"
+                  />
+                </n-space>
+
+                <!-- Cursor GPT-3.5 使用统计 -->
+                <n-space vertical :size="8" class="basic-model-usage">
+                  <n-space justify="space-between">
+                    <span>{{ i18n.dashboard.basicModelUsage }}</span>
+                    <n-space v-if="deviceInfo.cursorInfo.usage" :size="0">
+                      <n-number-animation 
+                        :from="0" 
+                        :to="deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.numRequests || 0"
+                        :duration="1000"
+                      />
+                      <span v-if="deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.maxRequestUsage">
+                        /{{ deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.maxRequestUsage }}
+                      </span>
+                      <span v-else>/{{ i18n.dashboard.unlimited }}</span>
+                    </n-space>
+                    <span v-else>{{ i18n.dashboard.cannotGetUsage }}</span>
+                  </n-space>
+                  <n-progress
+                    type="line"
+                    status="success"
+                    :percentage="cursorGpt35Percentage"
+                    :show-indicator="false"
+                    :height="12"
+                    :border-radius="6"
+                    :processing="loading"
+                  />
+                </n-space>
+
+              </n-space>
+            </n-card>
+          </n-grid-item>
+        </n-grid>
+
+        <!-- 快捷操作卡片 -->
+        <n-card :title="i18n.dashboard.quickActions" class="quick-actions-card" style="user-select: none;">
           <n-space vertical>
-            <n-space vertical :size="12" style="user-select: none;">
-              <n-space :size="8" style="line-height: 1.2;" class="user-info-username">
-                <span style="width: 70px">{{ i18n.dashboard.username }}</span>
-                <n-space :size="4" align="center">
-                  <span 
-                    style="font-size: 14px; cursor: pointer;" 
-                    @click="deviceInfo.userInfo?.username && copyText(deviceInfo.userInfo.username)"
-                  >{{ deviceInfo.userInfo?.username }}</span>
-                  <n-tag :type="levelMap[deviceInfo.userInfo?.level || 1].type" size="tiny" style="transform: scale(0.9)">
-                    {{ levelMap[deviceInfo.userInfo?.level || 1].name }}
-                  </n-tag>
-                </n-space>
-              </n-space>
-
-              <n-divider style="margin: 0" />
-
-              <n-space :size="8" style="line-height: 1.2;" class="user-info-email">
-                <span style="width: 70px">{{ i18n.dashboard.email }}</span>
-                <n-space :size="4" align="center">
-                  <span 
-                    style="font-size: 14px; cursor: pointer;" 
-                    @click="deviceInfo.cursorInfo.userInfo?.email && copyText(deviceInfo.cursorInfo.userInfo?.email)"
-                  >{{ deviceInfo.cursorInfo.userInfo?.email || '未绑定' }}</span>
-                  <n-tag :type="deviceInfo.cursorInfo.userInfo?.email_verified ? 'success' : 'warning'" size="tiny" style="transform: scale(0.9)">
-                    {{ deviceInfo.cursorInfo.userInfo?.email_verified ? i18n.systemControl.clientVerified : i18n.systemControl.clientUnverified }}
-                  </n-tag>
-                </n-space>
-              </n-space>
-              <n-space :size="8" style="line-height: 1.2;" class="user-info-cc-status">
-                <span style="width: 70px">{{ i18n.dashboard.ccStatus }}</span>
-                <n-tag :type="deviceInfo.hookStatus === true ? 'success' : 'error'" size="small">
-                  {{ deviceInfo.hookStatus === true ? i18n.systemControl.hookApplied : i18n.systemControl.hookNotApplied }}
-                </n-tag>
-              </n-space>
-              <n-space :size="8" style="line-height: 1.2;" class="user-info-register-time">
-                <span style="width: 70px">{{ i18n.dashboard.registerTime }}</span>
-                <span 
-                  style="font-size: 14px; cursor: pointer;" 
-                  @click="copyText(deviceInfo.cursorInfo.usage?.startOfMonth ? formatDate(deviceInfo.cursorInfo.usage.startOfMonth) : '')"
-                >{{ deviceInfo.cursorInfo.usage?.startOfMonth ? formatDate(deviceInfo.cursorInfo.usage.startOfMonth) : '未知' }}</span>
-              </n-space>
-              <span 
-                style="font-size: 12px; color: #999; word-break: break-all; text-align: center; cursor: pointer;" 
-                @click="copyText(deviceInfo.machineCode)"
-                class="user-info-machine-code"
-              >{{ deviceInfo.machineCode }}</span>
+            <n-space justify="space-around">
+              <n-button type="primary" @click="handleQuickChange" :disabled="!deviceInfo.userInfo" :loading="quickChangeLoading">
+                {{ i18n.dashboard.quickChange }}
+              </n-button>
+              <n-button type="primary" @click="handleAccountSwitch" :disabled="!deviceInfo.userInfo" :loading="accountSwitchLoading">
+                {{ i18n.dashboard.changeAccount }}
+              </n-button>
+              <n-button type="primary" @click="handleMachineCodeClick" :loading="machineCodeLoading">
+                {{ i18n.dashboard.changeMachineCode }}
+              </n-button>
+              <n-button type="primary" @click="handleHistoryDownload">
+                {{ i18n.dashboard.cursorHistoryDownload }}
+              </n-button>
             </n-space>
           </n-space>
         </n-card>
-      </n-grid-item>
 
-      <!-- 使用统计卡片 -->
-      <n-grid-item style="display: grid;">
-        <n-card :title="i18n.dashboard.usageStats" style="height: 100%; user-select: none;">
-          <n-space vertical :size="24" style="height: 100%; justify-content: space-around;">
-            <!-- 账户使用统计 -->
-            <n-space vertical :size="8" class="cursor-pool-usage">
-              <n-space justify="space-between">
-                <span>{{ i18n.dashboard.cpUsage }}</span>
-                <n-space :size="0">
-                  <n-number-animation 
-                    :from="0" 
-                    :to="(deviceInfo.userInfo?.usedCount || 0) * 50"0
-                    :duration="1000"
-                  />
-                  <span>/{{ (deviceInfo.userInfo?.totalCount || 0) * 50 }}</span>
-                </n-space>
-              </n-space>
-              <n-progress
-                type="line"
-                status="success"
-                :percentage="accountUsagePercentage"
-                :show-indicator="false"
-                :height="12"
-                :border-radius="6"
-                :processing="loading"
-              />
+        <!-- 添加更新模态框 -->
+        <n-modal
+          v-model:show="showUpdateModal"
+          :mask-closable="!versionInfo?.forceUpdate"
+          :closable="!versionInfo?.forceUpdate"
+          preset="card"
+          style="width: 500px"
+          :title="i18n.dashboard.newVersionAvailable"
+        >
+          <n-space vertical>
+            <div>{{ i18n.dashboard.currentVersion }}: {{ LOCAL_VERSION }}</div>
+            <div>{{ i18n.dashboard.newVersion }}: {{ versionInfo?.version }}</div>
+            <n-divider />
+            <div style="white-space: pre-line">{{ versionInfo?.changeLog }}</div>
+            <n-space justify="end">
+              <n-button
+                v-if="!versionInfo?.forceUpdate"
+                @click="handleLater"
+              >
+                {{ i18n.dashboard.later }}
+              </n-button>
+              <n-button
+                type="primary"
+                @click="handleDownload"
+              >
+                {{ i18n.dashboard.downloadNow }}
+              </n-button>
             </n-space>
-
-            <!-- Cursor GPT-4 使用统计 -->
-            <n-space vertical :size="8" class="advanced-model-usage">
-              <n-space justify="space-between">
-                <span>{{ i18n.dashboard.advancedModelUsage }}</span>
-                <n-space v-if="deviceInfo.cursorInfo.usage" :size="0">
-                  <n-number-animation 
-                    :from="0"
-                    :to="deviceInfo.cursorInfo.usage['gpt-4']?.numRequests || 0"
-                    :duration="1000"
-                  />
-                  <span>/{{ deviceInfo.cursorInfo.usage['gpt-4']?.maxRequestUsage || 0 }}</span>
-                </n-space>
-                <span v-else>{{ i18n.dashboard.cannotGetUsage }}</span>
-              </n-space>
-              <n-progress
-                type="line"
-                status="success"
-                :percentage="cursorGpt4Percentage"
-                :show-indicator="false"
-                :height="12"
-                :border-radius="6"
-                :processing="loading"
-              />
-            </n-space>
-
-            <!-- Cursor GPT-3.5 使用统计 -->
-            <n-space vertical :size="8" class="basic-model-usage">
-              <n-space justify="space-between">
-                <span>{{ i18n.dashboard.basicModelUsage }}</span>
-                <n-space v-if="deviceInfo.cursorInfo.usage" :size="0">
-                  <n-number-animation 
-                    :from="0" 
-                    :to="deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.numRequests || 0"
-                    :duration="1000"
-                  />
-                  <span v-if="deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.maxRequestUsage">
-                    /{{ deviceInfo.cursorInfo.usage['gpt-3.5-turbo']?.maxRequestUsage }}
-                  </span>
-                  <span v-else>/{{ i18n.dashboard.unlimited }}</span>
-                </n-space>
-                <span v-else>{{ i18n.dashboard.cannotGetUsage }}</span>
-              </n-space>
-              <n-progress
-                type="line"
-                status="success"
-                :percentage="cursorGpt35Percentage"
-                :show-indicator="false"
-                :height="12"
-                :border-radius="6"
-                :processing="loading"
-              />
-            </n-space>
-
           </n-space>
-        </n-card>
-      </n-grid-item>
-    </n-grid>
+        </n-modal>
 
-    <!-- 快捷操作卡片 -->
-    <n-card :title="i18n.dashboard.quickActions" class="quick-actions-card" style="user-select: none;">
-      <n-space vertical>
-        <n-space justify="space-around">
-          <n-button type="primary" @click="handleQuickChange" :disabled="!deviceInfo.userInfo" :loading="quickChangeLoading">
-            {{ i18n.dashboard.quickChange }}
-          </n-button>
-          <n-button type="primary" @click="handleAccountSwitch" :disabled="!deviceInfo.userInfo" :loading="accountSwitchLoading">
-            {{ i18n.dashboard.changeAccount }}
-          </n-button>
-          <n-button type="primary" @click="handleMachineCodeClick" :loading="machineCodeLoading">
-            {{ i18n.dashboard.changeMachineCode }}
-          </n-button>
-        </n-space>
-      </n-space>
-    </n-card>
+        <n-modal
+          v-model:show="showUnusedCreditsModal"
+          preset="dialog"
+          title="使用提醒"
+          :closable="true"
+          :mask-closable="false"
+        >
+          <template #default>
+            <p>您还有 {{ unusedCredits }} 次高级模型使用次数未使用</p>
+            <p style="margin-top: 12px; color: #666;">
+              {{ pendingAction === 'quick' ? '切换代理账号（账户+机器码）将扣除50积分' : '切换代理账号将扣除50积分' }}，确定要继续吗？
+            </p>
+          </template>
+          <template #action>
+            <n-space justify="end">
+              <n-button @click="handleCancelSwitch">
+                取消
+              </n-button>
+              <n-button type="primary" @click="handleConfirmSwitch">
+                确认切换
+              </n-button>
+            </n-space>
+          </template>
+        </n-modal>
 
-    <!-- 添加更新模态框 -->
-    <n-modal
-      v-model:show="showUpdateModal"
-      :mask-closable="!versionInfo?.forceUpdate"
-      :closable="!versionInfo?.forceUpdate"
-      preset="card"
-      style="width: 500px"
-      :title="i18n.dashboard.newVersionAvailable"
-    >
-      <n-space vertical>
-        <div>{{ i18n.dashboard.currentVersion }}: {{ LOCAL_VERSION }}</div>
-        <div>{{ i18n.dashboard.newVersion }}: {{ versionInfo?.version }}</div>
-        <n-divider />
-        <div style="white-space: pre-line">{{ versionInfo?.changeLog }}</div>
-        <n-space justify="end">
-          <n-button
-            v-if="!versionInfo?.forceUpdate"
-            @click="handleLater"
+        <!-- 添加 Cursor 运行提醒模态框 -->
+        <n-modal
+          v-model:show="showCursorRunningModal"
+          preset="dialog"
+          title="Cursor 正在运行"
+          :closable="true"
+          :mask-closable="false"
+        >
+          <template #default>
+            检测到 Cursor 正在运行, 请保存尚未更改的项目再继续操作!
+          </template>
+          <template #action>
+            <n-space justify="end">
+              <n-button type="warning" @click="handleForceKill">
+                我已保存, 强制关闭
+              </n-button>
+            </n-space>
+          </template>
+        </n-modal>
+
+        <!-- 添加管理员权限提示模态框 -->
+        <n-modal
+          v-model:show="showAdminPrivilegeModal"
+          preset="dialog"
+          title="需要管理员权限"
+          :closable="false"
+          :mask-closable="false"
+          style="width: 500px"
+        >
+          <template #header>
+            <n-space align="center">
+              <n-icon size="24" color="#f0a020">
+                <warning-outlined />
+              </n-icon>
+              <span>需要管理员权限</span>
+            </n-space>
+          </template>
+          <div style="margin: 24px 0;">
+            <p>本程序需要管理员权限才能正常运行。</p>
+            <p style="margin-top: 12px; color: #999;">
+              请右键点击程序图标,选择"以管理员身份运行"后重新启动程序。
+            </p>
+          </div>
+          <template #action>
+            <n-button type="error" @click="handleExit" block>
+              退出程序
+            </n-button>
+          </template>
+        </n-modal>
+
+        <!-- 修改积分不足模态框 -->
+        <n-modal
+          v-model:show="showInsufficientCreditsModal"
+          preset="dialog"
+          title="额度不足"
+          :closable="true"
+          :mask-closable="false"
+          style="width: 500px"
+        >
+          <n-form
+            :model="formValue"
+            label-placement="left"
+            label-width="auto"
+            require-mark-placement="right-hanging"
           >
-            {{ i18n.dashboard.later }}
-          </n-button>
-          <n-button
-            type="primary"
-            @click="handleDownload"
-          >
-            {{ i18n.dashboard.downloadNow }}
-          </n-button>
-        </n-space>
+            <div style="margin-bottom: 16px">
+              <p>您当前对话额度不足，账户切换需要消耗50额度。</p>
+              <p style="margin-top: 12px; color: #ff4d4f;">
+                当前额度: {{ userCredits }}，还需要: {{ Math.max(0, 50 - userCredits) }} 额度
+              </p>
+            </div>
+            
+            <n-form-item label="激活码">
+              <n-input
+                v-model:value="activationCode"
+                type="text"
+                placeholder="请输入卡密"
+                :disabled="activationLoading"
+              />
+            </n-form-item>
+            
+            <p v-if="activationError" style="color: #ff4d4f; margin-top: 8px;">
+              {{ activationError }}
+            </p>
+          </n-form>
+
+          <template #action>
+            <n-space justify="end">
+              <n-button @click="showInsufficientCreditsModal = false" :disabled="activationLoading">
+                取消
+              </n-button>
+              <n-button type="primary" @click="handleActivate" :loading="activationLoading">
+                激活卡密
+              </n-button>
+            </n-space>
+          </template>
+        </n-modal>
+
+        <!-- 添加引导组件 -->
+        <DashboardTour :show="shouldShowTour" :onComplete="handleTourComplete" />
       </n-space>
-    </n-modal>
-
-    <n-modal
-      v-model:show="showUnusedCreditsModal"
-      preset="dialog"
-      title="使用提醒"
-      :closable="true"
-      :mask-closable="false"
-    >
-      <template #default>
-        <p>您还有 {{ unusedCredits }} 次高级模型使用次数未使用</p>
-        <p style="margin-top: 12px; color: #666;">
-          {{ pendingAction === 'quick' ? '一键切换将扣除50积分' : '切换账号将扣除50积分' }}，确定要继续吗？
-        </p>
-      </template>
-      <template #action>
-        <n-space justify="end">
-          <n-button @click="handleCancelSwitch">
-            取消
-          </n-button>
-          <n-button type="primary" @click="handleConfirmSwitch">
-            确认切换
-          </n-button>
-        </n-space>
-      </template>
-    </n-modal>
-
-    <!-- 添加 Cursor 运行提醒模态框 -->
-    <n-modal
-      v-model:show="showCursorRunningModal"
-      preset="dialog"
-      title="Cursor 正在运行"
-      :closable="true"
-      :mask-closable="false"
-    >
-      <template #default>
-        检测到 Cursor 正在运行, 请保存尚未更改的项目再继续操作!
-      </template>
-      <template #action>
-        <n-space justify="end">
-          <n-button type="warning" @click="handleForceKill">
-            我已保存, 强制关闭
-          </n-button>
-        </n-space>
-      </template>
-    </n-modal>
-
-    <!-- 添加管理员权限提示模态框 -->
-    <n-modal
-      v-model:show="showAdminPrivilegeModal"
-      preset="dialog"
-      title="需要管理员权限"
-      :closable="false"
-      :mask-closable="false"
-      style="width: 500px"
-    >
-      <template #header>
-        <n-space align="center">
-          <n-icon size="24" color="#f0a020">
-            <warning-outlined />
-          </n-icon>
-          <span>需要管理员权限</span>
-        </n-space>
-      </template>
-      <div style="margin: 24px 0;">
-        <p>本程序需要管理员权限才能正常运行。</p>
-        <p style="margin-top: 12px; color: #999;">
-          请右键点击程序图标,选择"以管理员身份运行"后重新启动程序。
-        </p>
-      </div>
-      <template #action>
-        <n-button type="error" @click="handleExit" block>
-          退出程序
-        </n-button>
-      </template>
-    </n-modal>
-
-    <n-space justify="center" style="margin-top: 24px;">
-      <n-button
-        text
-        @click="handleHistoryDownload"
-        style="font-size: 12px;"
-      >
-        {{ i18n.dashboard.cursorHistoryDownload }}
-      </n-button>
     </n-space>
-
-    <!-- 添加免责声明模态框 -->
-    <n-modal
-      v-model:show="showDisclaimerModal"
-      preset="card"
-      style="width: 600px; max-width: 90vw;"
-      title="免责声明"
-      :closable="false"
-      :mask-closable="false"
-    >
-      <n-scrollbar style="max-height: 60vh">
-        <div style="white-space: pre-line; padding: 16px 0;">
-          {{ disclaimerContent }}
-        </div>
-      </n-scrollbar>
-      <template #footer>
-        <n-space justify="end">
-          <n-button type="primary" :disabled="!canConfirmDisclaimer" @click="handleConfirmDisclaimer">
-            {{ canConfirmDisclaimer ? '我已阅读并同意' : `请等待 ${disclaimerCountdown} 秒` }}
-          </n-button>
-        </n-space>
-      </template>
-    </n-modal>
-
-    <!-- 修改积分不足模态框 -->
-    <n-modal
-      v-model:show="showInsufficientCreditsModal"
-      preset="dialog"
-      title="额度不足"
-      :closable="true"
-      :mask-closable="false"
-      style="width: 500px"
-    >
-      <n-form
-        :model="formValue"
-        label-placement="left"
-        label-width="auto"
-        require-mark-placement="right-hanging"
-      >
-        <div style="margin-bottom: 16px">
-          <p>您当前对话额度不足，账户切换需要消耗50额度。</p>
-          <p style="margin-top: 12px; color: #ff4d4f;">
-            当前额度: {{ userCredits }}，还需要: {{ Math.max(0, 50 - userCredits) }} 额度
-          </p>
-        </div>
-        
-        <n-form-item label="激活码">
-          <n-input
-            v-model:value="activationCode"
-            type="text"
-            placeholder="请输入卡密"
-            :disabled="activationLoading"
-          />
-        </n-form-item>
-        
-        <p v-if="activationError" style="color: #ff4d4f; margin-top: 8px;">
-          {{ activationError }}
-        </p>
-      </n-form>
-
-      <template #action>
-        <n-space justify="end">
-          <n-button @click="showInsufficientCreditsModal = false" :disabled="activationLoading">
-            取消
-          </n-button>
-          <n-button type="primary" @click="handleActivate" :loading="activationLoading">
-            激活卡密
-          </n-button>
-        </n-space>
-      </template>
-    </n-modal>
-
-    <!-- 添加引导组件 -->
-    <DashboardTour :show="shouldShowTour" :onComplete="handleTourComplete" />
-  </n-space>
+  </div>
 </template>
 
 <style scoped>
@@ -1232,5 +1172,25 @@ const formValue = ref({
 
 .n-grid-item {
   min-height: 0;
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+  color: white;
+}
+
+.welcome-content {
+  padding: 16px;
+}
+
+.greeting {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+}
+
+.welcome-text {
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.9;
 }
 </style>

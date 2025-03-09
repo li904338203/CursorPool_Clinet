@@ -6,11 +6,11 @@ export function setupRouterGuards(router: Router) {
     _from: RouteLocationNormalized,
     next: NavigationGuardNext
   ) => {
-    const apiKey = localStorage.getItem('apiKey')
+    const accessToken = localStorage.getItem('accessToken')
     
-    if (to.name !== 'login' && !apiKey) {
+    if (to.name !== 'login' && !accessToken) {
       next({ name: 'login' })
-    } else if (to.name === 'login' && apiKey) {
+    } else if (to.name === 'login' && accessToken) {
       next({ name: 'dashboard' })
     } else {
       next()

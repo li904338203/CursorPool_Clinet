@@ -1,7 +1,7 @@
 [package]
-name = "cursor-pool"
+name = "love-cursor"
 version = "0.1.0"
-description = "Cursor Pool App"
+description = "Cursor Agent App"
 authors = ["Sanyela"]
 edition = "2021"
 rust-version = "1.60"

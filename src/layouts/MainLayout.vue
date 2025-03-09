@@ -28,7 +28,7 @@ const currentPlatform = ref('')
 const isMacOS = computed(() => currentPlatform.value === 'macos')
 
 // 登录状态管理
-const isLoggedIn = ref(!!localStorage.getItem('apiKey'))
+const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const showLoginOverlay = computed(() => !isLoggedIn.value)
 
 // 处理登录成功
@@ -142,7 +142,7 @@ onMounted(async () => {
     >
       <div class="logo">
         <h2 v-if="!collapsed" style="user-select: none;">{{ i18n.appName }}</h2>
-        <h2 v-else style="user-select: none;">CP</h2>
+        <h2 v-else style="user-select: none;">CA</h2>
       </div>
       <n-menu
         :options="menuOptions"

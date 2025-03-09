@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "cursor-pool",
+  "productName": "love-cursor",
   "version": "../package.json",
-  "identifier": "com.cursor-pool.app",
+  "identifier": "com.love-cursor.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,8 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "cursor-pool",
-        "minWidth": 860,
+        "title": "love-cursor",
+        "width": 1000,
+        "height": 600,
+        "minWidth": 1000,
         "minHeight": 600,
         "decorations": false,
         "minimizable": true,

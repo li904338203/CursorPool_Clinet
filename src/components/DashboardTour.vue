@@ -61,8 +61,8 @@ const tourSteps: Array<{
   {
     element: '.user-info-username',
     popover: {
-      title: 'CP 账户信息',
-      description: '当前账户的Cursor Pool账户名称和会员等级, CP是Cursor Pool的缩写',
+      title: 'CA 账户信息',
+      description: '当前账户的Cursor Agent账户名称和会员等级, CA是Cursor Agent的缩写',
       side: 'right' as Side,
       align: 'start'
     }
@@ -71,7 +71,7 @@ const tourSteps: Array<{
     element: '.user-info-email',
     popover: {
       title: 'Cursor 邮箱',
-      description: '本地Cursor账户的邮箱, 也就是正在使用的账户, 不是Cursor Pool的邮箱, 如果未显示, 说明本地Cursor未登录或者掉登录',
+      description: '本地Cursor账户的邮箱, 也就是正在使用的账户, 不是Cursor Agent的邮箱, 如果未显示, 说明本地Cursor未登录或者掉登录',
       side: 'right' as Side,
       align: 'start'
     }
@@ -106,8 +106,8 @@ const tourSteps: Array<{
   {
     element: '.cursor-pool-usage',
     popover: {
-      title: 'Cursor Pool 额度使用量',
-      description: '当前账户的Cursor Pool额度使用情况, 不是Cursor的使用情况, 您购买的额度从这里查看',
+      title: 'Cursor Agent 额度剩余量',
+      description: '当前账户的Cursor Agent额度剩余情况, 不是Cursor的使用情况, 您购买的额度从这里查看',
       side: 'left' as Side,
       align: 'start'
     }
@@ -125,7 +125,7 @@ const tourSteps: Array<{
     element: '.basic-model-usage',
     popover: {
       title: '普通模型使用量',
-      description: '本地Cursor普通模型使用情况, 例如gpt-3.5, 无限制使用, 不扣除Cursor Pool额度',
+      description: '本地Cursor普通模型使用情况, 例如gpt-3.5, 无限制使用, 不扣除Cursor Agent额度',
       side: 'left' as Side,
       align: 'start'
     }
@@ -134,7 +134,7 @@ const tourSteps: Array<{
     element: '.quick-actions-card',
     popover: {
       title: '快捷操作',
-      description: '这里提供了一键切换、更换账户和更换机器码的功能。',
+      description: '这里提供了切换代理账号（账户+机器码）、切换代理账号和更换机器码的功能。',
       side: 'top' as Side,
       align: 'center'
     }

@@ -11,7 +11,6 @@ import {
   NModal,
   useMessage
 } from 'naive-ui'
-import { useRouter } from 'vue-router'
 import { useI18n } from '../locales'
 import { messages } from '../locales/messages'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
@@ -29,7 +28,6 @@ import {
 import { addHistoryRecord } from '../utils/history'
 import { version } from '../../package.json'
 
-const router = useRouter()
 const message = useMessage()
 const { currentLang, i18n } = useI18n()
 
@@ -66,31 +64,25 @@ const pendingControlAction = ref<'disableUpdate' | 'restoreUpdate' | 'applyHook'
 const activateLoading = ref(false)
 const passwordChangeLoading = ref(false)
 
-const handleActivate = async () => {
-  if (!formValue.value.activationCode) {
-    message.warning(messages[currentLang.value].message.pleaseInputActivationCode)
-    return
-  }
-
-  activateLoading.value = true
+// 处理退出登录
+const handleLogout = async () => {
   try {
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) {
-      throw new Error('未找到 API Key')
-    }
-
-    await activate(apiKey, formValue.value.activationCode)
-    message.success(messages[currentLang.value].message.activationSuccess)
-    addHistoryRecord(
-      '激活码兑换',
-      '成功兑换激活码'
-    )
-    formValue.value.activationCode = ''
+    // 清除所有用户相关数据
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('userInfo')
+    localStorage.removeItem('last_version_check_time')
+    localStorage.removeItem('need_refresh_dashboard')
+    
+    // 触发刷新事件
+    window.dispatchEvent(new CustomEvent('refresh_dashboard_data'))
+    
+    message.success(i18n.value.common.logout + '成功')
+    
+    // 强制刷新页面
+    window.location.reload()
   } catch (error) {
-    console.error('激活失败:', error)
-    message.error(messages[currentLang.value].message.activationFailed)
-  } finally {
-    activateLoading.value = false
+    console.error('退出登录失败:', error)
+    message.error('退出登录失败，请刷新页面重试')
   }
 }
 
@@ -106,34 +98,57 @@ const handlePasswordChange = async () => {
 
   passwordChangeLoading.value = true
   try {
-    const apiKey = localStorage.getItem('apiKey')
-    if (!apiKey) {
-      throw new Error('未找到 API Key')
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
+      throw new Error('未找到 Token')
     }
 
-    await changePassword(apiKey, formValue.value.currentPassword, formValue.value.newPassword)
-    message.success(messages[currentLang.value].message.passwordChangeSuccess)
-    addHistoryRecord(
-      '密码修改',
-      '成功修改密码'
-    )
-    formValue.value.currentPassword = ''
-    formValue.value.newPassword = ''
-    formValue.value.confirmPassword = ''
-    
-    await handleLogout()
+    const result = await changePassword(accessToken, formValue.value.currentPassword, formValue.value.newPassword)
+    if (result) {
+      message.success(messages[currentLang.value].message.passwordChangeSuccess)
+      addHistoryRecord(
+        '密码修改',
+        '成功修改密码'
+      )
+      formValue.value.currentPassword = ''
+      formValue.value.newPassword = ''
+      formValue.value.confirmPassword = ''
+      
+      await handleLogout()
+    }
   } catch (error) {
-    message.error(messages[currentLang.value].message.passwordChangeFailed)
+    message.error(error instanceof Error ? error.message : messages[currentLang.value].message.passwordChangeFailed)
   } finally {
     passwordChangeLoading.value = false
   }
 }
 
-const handleLogout = async () => {
-  localStorage.removeItem('apiKey')
-  await router.push('/dashboard')
-  window.dispatchEvent(new CustomEvent('refresh_dashboard_data'))
-  window.location.reload()
+const handleActivate = async () => {
+  if (!formValue.value.activationCode) {
+    message.warning(messages[currentLang.value].message.pleaseInputActivationCode)
+    return
+  }
+
+  activateLoading.value = true
+  try {
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
+      throw new Error('未找到 Token')
+    }
+
+    await activate(accessToken, formValue.value.activationCode)
+    message.success(messages[currentLang.value].message.activationSuccess)
+    addHistoryRecord(
+      '激活码兑换',
+      '成功兑换激活码'
+    )
+    formValue.value.activationCode = ''
+  } catch (error) {
+    console.error('激活失败:', error)
+    message.error(messages[currentLang.value].message.activationFailed)
+  } finally {
+    activateLoading.value = false
+  }
 }
 
 // 检查控制状态
@@ -382,12 +397,6 @@ onMounted(async () => {
     <n-card :title="messages[currentLang].settings.about">
       <n-space vertical :size="12">
         <p>{{ i18n.about.appName }} v{{ version }}</p>
-        <p>
-          {{ i18n.about.copyright }} © {{ new Date().getFullYear() }} 
-          <n-button text tag="a" href="https://github.com/Sanyela" target="_blank">Sanyela</n-button> & 
-          <n-button text tag="a" href="https://github.com/Cloxl" target="_blank">Cloxl</n-button>
-        </p>
-        <p>{{ i18n.about.license }}</p>
       </n-space>
     </n-card>
 

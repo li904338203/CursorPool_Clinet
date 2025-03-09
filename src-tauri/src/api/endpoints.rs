@@ -20,6 +20,21 @@ pub struct BugReportRequest {
     pub severity: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RegisterRequest {
+    pub tenantId: String,
+    pub account: String,
+    pub password: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BladeResponse<T> {
+    pub code: i32,
+    pub success: bool,
+    pub data: T,
+    pub msg: String,
+}
+
 #[tauri::command]
 pub async fn check_user(
     client: State<'_, super::client::ApiClient>,
@@ -68,31 +83,145 @@ pub async fn login(
     username: String,
     password: String,
     device_id: String,
+    tenant_id: Option<String>,
     sms_code: Option<String>,
 ) -> Result<LoginResponse, String> {
-    let response = client
+    println!("登录请求: username={}, device_id={}, tenant_id={:?}", username, device_id, tenant_id);
+    
+    // 如果提供了tenant_id，直接使用；否则查找用户的tenantId
+    let tenant_id = if let Some(id) = tenant_id {
+        id
+    } else {
+        // 查找用户的tenantId
+        let tenant_id_response = client
+            .0
+            .get(format!("http://27.25.153.228:8080/api/blade-system/user/getTenantId?account={}", username))
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Basic c2FiZXI6c2FiZXJfc2VjcmV0")
+            .send()
+            .await
+            .map_err(|e| {
+                println!("查找用户失败: {}", e);
+                e.to_string()
+            })?;
+        
+        println!("查找用户响应状态码: {}", tenant_id_response.status());
+        
+        // 如果状态码是400，表示用户不存在
+        if tenant_id_response.status() == 400 {
+            println!("用户不存在");
+            return Err("用户不存在".to_string());
+        }
+        
+        let tenant_id_text = tenant_id_response.text().await.map_err(|e| {
+            println!("读取查找用户响应失败: {}", e);
+            e.to_string()
+        })?;
+        
+        println!("查找用户响应内容: {}", tenant_id_text);
+        
+        // 解析为BladeResponse格式
+        let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&tenant_id_text).map_err(|e| {
+            println!("解析查找用户响应失败: {}", e);
+            e.to_string()
+        })?;
+        
+        // 检查是否成功
+        if !blade_response.success || blade_response.code != 200 {
+            println!("查找用户失败: {}", blade_response.msg);
+            return Err(blade_response.msg);
+        }
+        
+        // 获取tenantId
+        match blade_response.data.as_str() {
+            Some(id) => id.to_string(),
+            None => {
+                println!("无法获取tenantId");
+                return Err("无法获取tenantId".to_string());
+            }
+        }
+    };
+    
+    println!("使用tenantId={}", tenant_id);
+    
+    // 然后调用登录接口
+    let login_url = format!(
+        "http://27.25.153.228:8083/blade-auth/token?tenantId={}&account={}&password={}&type=password",
+        tenant_id, username, password
+    );
+    
+    println!("登录URL: {}", login_url);
+    println!("Authorization: Basic c2FiZXI6c2FiZXJfc2VjcmV0");
+    
+    // 构建请求
+    let request = client
         .0
-        .post(format!("{}/user/login", get_base_url()))
-        .json(&LoginRequest {
-            username,
-            password,
-            device_id,
-            sms_code,
-        })
+        .post(login_url.clone())
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Basic c2FiZXI6c2FiZXJfc2VjcmV0");
+    
+    // 打印请求信息
+    println!("请求方法: POST");
+    println!("请求URL: {}", login_url);
+    println!("请求头: Content-Type: application/json");
+    println!("请求头: Authorization: Basic c2FiZXI6c2FiZXJfc2VjcmV0");
+    
+    // 发送请求
+    let login_response = request
         .send()
         .await
-        .map_err(|e| e.to_string())?;
-
-    let api_response: ApiResponse<LoginResponse> = response.json().await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| {
+            println!("登录请求失败: {}", e);
+            e.to_string()
+        })?;
     
-    // 如果状态不是成功, 返回错误
-    if api_response.status != "success" {
-        return Err(api_response.message);
+    println!("登录响应状态码: {}", login_response.status());
+    
+    let login_text = login_response.text().await.map_err(|e| {
+        println!("读取登录响应失败: {}", e);
+        e.to_string()
+    })?;
+    
+    println!("登录响应内容: {}", login_text);
+    
+    // 解析为BladeResponse格式
+    let login_blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&login_text).map_err(|e| {
+        println!("解析登录响应失败: {}", e);
+        e.to_string()
+    })?;
+    
+    // 检查是否成功
+    if !login_blade_response.success || login_blade_response.code != 200 {
+        println!("登录失败: {}", login_blade_response.msg);
+        return Err(login_blade_response.msg);
     }
     
-    // 从 ApiResponse 中提取 LoginResponse
-    api_response.data.ok_or_else(|| "No login data received".to_string())
+    // 获取token
+    let token_data = match login_blade_response.data.as_object() {
+        Some(obj) => obj,
+        None => {
+            println!("无法获取token数据");
+            return Err("无法获取token数据".to_string());
+        }
+    };
+    
+    // 兼容新的返回数据格式，尝试获取accessToken或access_token
+    let token = match token_data.get("accessToken").and_then(|t| t.as_str()) {
+        Some(t) => t.to_string(),
+        None => match token_data.get("access_token").and_then(|t| t.as_str()) {
+            Some(t) => t.to_string(),
+            None => {
+                println!("无法获取token");
+                return Err("无法获取token".to_string());
+            }
+        }
+    };
+    
+    println!("登录成功, token={}", token);
+    
+    Ok(LoginResponse {
+        api_key: Some(token),
+    })
 }
 
 #[tauri::command]
@@ -351,4 +480,134 @@ pub async fn get_disclaimer(
         .map_err(|e| e.to_string())?;
 
     response.json().await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn register(
+    client: State<'_, super::client::ApiClient>,
+    tenantId: String,
+    account: String,
+    password: String,
+) -> Result<ApiResponse<LoginResponse>, String> {
+    println!("后端收到注册请求: tenantId={}, account={}, password={}", tenantId, account, password);
+    
+    let request = RegisterRequest {
+        tenantId,
+        account,
+        password,
+    };
+    
+    let request_json = serde_json::to_string(&request).unwrap_or_default();
+    println!("构建的请求体: {}", request_json);
+    
+    let response = client
+        .0
+        .post(format!("http://27.25.153.228:8080/api/blade-system/user/register"))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Basic c2FiZXI6c2FiZXJfc2VjcmV0")
+        .json(&request)
+        .send()
+        .await
+        .map_err(|e| {
+            println!("发送请求失败: {}", e);
+            e.to_string()
+        })?;
+    
+    println!("收到响应状态码: {}", response.status());
+    
+    let response_text = response.text().await.map_err(|e| {
+        println!("读取响应文本失败: {}", e);
+        e.to_string()
+    })?;
+    
+    println!("响应内容: {}", response_text);
+    
+    // 解析为BladeResponse格式
+    let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&response_text).map_err(|e| {
+        println!("解析响应失败: {}", e);
+        e.to_string()
+    })?;
+    
+    println!("解析响应成功: code={}, success={}, msg={}", blade_response.code, blade_response.success, blade_response.msg);
+    
+    // 检查是否成功
+    if !blade_response.success || blade_response.code != 200 {
+        println!("注册失败: {}", blade_response.msg);
+        return Err(blade_response.msg);
+    }
+    
+    // 构造一个ApiResponse
+    let api_response = ApiResponse {
+        status: "success".to_string(),
+        message: blade_response.msg,
+        data: Some(LoginResponse {
+            api_key: Some("dummy_api_key".to_string()),
+        }),
+    };
+    
+    println!("注册成功");
+    Ok(api_response)
+}
+
+#[tauri::command]
+pub async fn get_tenant_id(
+    client: State<'_, super::client::ApiClient>,
+    account: String,
+) -> Result<ApiResponse<String>, String> {
+    println!("查找用户: account={}", account);
+    
+    let response = client
+        .0
+        .get(format!("http://27.25.153.228:8080/api/blade-system/user/getTenantId?account={}", account))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Basic c2FiZXI6c2FiZXJfc2VjcmV0")
+        .send()
+        .await
+        .map_err(|e| {
+            println!("发送请求失败: {}", e);
+            e.to_string()
+        })?;
+    
+    println!("收到响应状态码: {}", response.status());
+    
+    let response_text = response.text().await.map_err(|e| {
+        println!("读取响应文本失败: {}", e);
+        e.to_string()
+    })?;
+    
+    println!("响应内容: {}", response_text);
+    
+    // 解析为BladeResponse格式
+    let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&response_text).map_err(|e| {
+        println!("解析响应失败: {}", e);
+        e.to_string()
+    })?;
+    
+    println!("解析响应成功: code={}, success={}, msg={}", blade_response.code, blade_response.success, blade_response.msg);
+    
+    // 检查是否成功
+    if !blade_response.success || blade_response.code != 200 {
+        println!("查找用户失败: {}", blade_response.msg);
+        return Err(blade_response.msg);
+    }
+    
+    // 获取tenantId
+    let tenant_id = match blade_response.data.as_str() {
+        Some(id) => id.to_string(),
+        None => {
+            println!("无法获取tenantId");
+            return Err("无法获取tenantId".to_string());
+        }
+    };
+    
+    println!("查找用户成功, tenantId={}", tenant_id);
+    
+    // 构造一个ApiResponse
+    let api_response = ApiResponse {
+        status: "success".to_string(),
+        message: blade_response.msg,
+        data: Some(tenant_id),
+    };
+    
+    Ok(api_response)
 }

@@ -13,7 +13,9 @@ import type {
     PublicInfo,
     MachineInfo,
     ActivateResponse,
-    DisclaimerResponse
+    DisclaimerResponse,
+    RegisterRequest,
+    UserDetailResponse
 } from './types'
 
 // 错误处理
@@ -54,31 +56,143 @@ export async function sendCode(username: string, isResetPassword?: boolean): Pro
 
 export async function login(params: LoginRequest): Promise<LoginResponse> {
     try {
-        const response = await invoke<LoginResponse>('login', {
-            username: params.username,
-            password: params.password,
-            deviceId: params.deviceId,
-            smsCode: params.smsCode
-        })
-        return response
+        console.log('登录请求参数:', params);
+        
+        // 如果没有tenantId，先获取
+        let tenantId = params.tenantId;
+        if (!tenantId) {
+            tenantId = await getTenantId(params.username);
+        }
+        
+        // 构建登录URL
+        const loginUrl = `http://27.25.153.228:8083/blade-auth/token?tenantId=${tenantId}&account=${params.username}&password=${params.password}&type=password`;
+        
+        console.log('登录URL:', loginUrl);
+        
+        // 使用POST方法调用登录接口
+        const response = await fetch(loginUrl, {
+            method: 'POST', // 改为POST方法
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic c2FiZXI6c2FiZXJfc2VjcmV0'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`登录失败: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('登录响应:', data);
+        
+        if (!data.success || data.code !== 200) {
+            throw new Error(data.msg || '登录失败');
+        }
+        
+        // 从响应中提取token，兼容新的返回数据格式
+        const token = data.data?.accessToken || data.data?.access_token;
+        if (!token) {
+            throw new Error('无法获取token');
+        }
+        
+        // 保存完整的用户数据到localStorage
+        localStorage.setItem('userInfo', JSON.stringify(data.data));
+        
+        // 保存token到localStorage
+        localStorage.setItem('accessToken', token);
+        
+        // 返回兼容原来接口的数据格式
+        return { accessToken: token };
     } catch (error) {
-        throw new ApiError(error instanceof Error ? error.message : 'Failed to login')
+        console.error('登录失败:', error);
+        throw new ApiError(error instanceof Error ? error.message : 'Failed to login');
+    }
+}
+
+export async function register(params: RegisterRequest): Promise<boolean> {
+    try {
+        console.log('发送注册请求:', params); // 添加日志
+        
+        // 直接使用params对象，不做字段映射
+        const response = await invoke<ApiResponse<any>>('register', {
+            tenantId: params.tenantId,
+            account: params.account,
+            password: params.password
+        })
+        
+        console.log('注册响应:', response);
+        
+        // 如果响应成功，返回true
+        return response.status === 'success';
+    } catch (error) {
+        console.error('注册失败:', error);
+        throw new ApiError(error instanceof Error ? error.message : 'Failed to register');
     }
 }
 
 // 用户信息相关 API
-export async function getUserInfo(apiKey: string): Promise<UserInfo> {
+export async function getUserDetail(token: string): Promise<UserDetailResponse> {
     try {
-        const response = await invoke<ApiResponse<UserInfo>>('get_user_info', { apiKey })
-        return handleApiResponse(response)
+        const response = await fetch('http://27.25.153.228:8083/blade-system/user/info', {
+            headers: {
+                'blade-auth': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`获取用户详情失败: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (!data.success || data.code !== 200) {
+            throw new Error(data.msg || '获取用户详情失败');
+        }
+
+        return data;
     } catch (error) {
-        throw new ApiError(error instanceof Error ? error.message : 'Failed to get user info')
+        throw new ApiError(error instanceof Error ? error.message : 'Failed to get user detail');
     }
 }
 
-export async function getAccount(apiKey: string): Promise<AccountDetail> {
+export async function getUserInfo(token: string): Promise<UserInfo> {
     try {
-        const response = await invoke<ApiResponse<AccountDetail>>('get_account', { apiKey })
+        // 获取用户详细信息
+        const userDetail = await getUserDetail(token);
+        
+        // 构造用户信息
+        const userInfo: UserInfo = {
+            totalCount: userDetail.data.balance + userDetail.data.bonus,
+            usedCount: 0,     // 这里可能需要从其他接口获取已使用额度
+            expireTime: Date.now() + 30 * 24 * 60 * 60 * 1000, // 默认30天
+            level: 1,         // 默认等级
+            isExpired: false,
+            username: userDetail.data.realName || userDetail.data.account,
+            email: '',
+            credits: userDetail.data.balance + userDetail.data.bonus,
+            balance: userDetail.data.balance,
+            bonus: userDetail.data.bonus,
+            usage: {
+                'gpt-4': {
+                    numRequests: 0
+                },
+                'gpt-3.5-turbo': {
+                    numRequests: 0
+                }
+            }
+        };
+        
+        // 保存用户数据到localStorage
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        
+        return userInfo;
+    } catch (error) {
+        throw new ApiError(error instanceof Error ? error.message : 'Failed to get user info');
+    }
+}
+
+export async function getAccount(token: string): Promise<AccountDetail> {
+    try {
+        const response = await invoke<ApiResponse<AccountDetail>>('get_account', { token })
         return handleApiResponse(response)
     } catch (error) {
         throw new ApiError(error instanceof Error ? error.message : 'Failed to get account info')
@@ -124,28 +238,38 @@ export async function getVersion(): Promise<VersionInfo> {
 }
 
 // 账户管理相关 API
-export async function activate(apiKey: string, code: string): Promise<ActivateResponse> {
+export async function activate(token: string, code: string): Promise<ActivateResponse> {
     try {
-        const response = await invoke<ApiResponse<ActivateResponse>>('activate', { apiKey, code })
+        const response = await invoke<ApiResponse<ActivateResponse>>('activate', { token, code })
         return handleApiResponse(response)
     } catch (error) {
         throw new ApiError(error instanceof Error ? error.message : 'Failed to activate')
     }
 }
 
-export async function changePassword(apiKey: string, old_password: string, new_password: string): Promise<LoginResponse> {
+export async function changePassword(token: string, old_password: string, new_password: string): Promise<boolean> {
     try {
-        const response = await invoke<ApiResponse<LoginResponse>>(
-            'change_password',
-            {
-                apiKey,
-                oldPassword: old_password,
-                newPassword: new_password,
+        // 使用fetch直接调用API
+        const response = await fetch('https://cursor.92xx.vip/blade-system/user/update-password?oldPassword=' + 
+            encodeURIComponent(old_password) + 
+            '&newPassword=' + encodeURIComponent(new_password) + 
+            '&newPassword1=' + encodeURIComponent(new_password), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Blade-Auth': 'Bearer ' + token
             }
-        )
-        return handleApiResponse(response)
+        });
+        
+        const data = await response.json();
+        
+        if (data.code === 200 && data.success) {
+            return true;
+        } else {
+            throw new Error(data.msg || '修改密码失败');
+        }
     } catch (error) {
-        throw new ApiError(error instanceof Error ? error.message : 'Failed to change password')
+        throw new ApiError(error instanceof Error ? error.message : '修改密码失败')
     }
 }
 
@@ -330,4 +454,23 @@ export async function closeCursor(): Promise<boolean> {
 
 export async function launchCursor(): Promise<boolean> {
   return await invoke('launch_cursor')
+}
+
+export async function getTenantId(account: string): Promise<string> {
+    try {
+        console.log('查找用户:', account);
+        
+        const response = await invoke<ApiResponse<string>>('get_tenant_id', { account });
+        
+        console.log('查找用户响应:', response);
+        
+        if (response.status === 'success' && response.data) {
+            return response.data;
+        }
+        
+        throw new Error(response.message || '查找用户失败');
+    } catch (error) {
+        console.error('查找用户失败:', error);
+        throw new ApiError(error instanceof Error ? error.message : 'Failed to get tenant ID');
+    }
 }

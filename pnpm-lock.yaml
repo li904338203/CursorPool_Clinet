@@ -41,6 +41,9 @@ importers:
       pinia:
         specifier: ^3.0.1
         version: 3.0.1(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))
+      sm-crypto:
+        specifier: ^0.3.13
+        version: 0.3.13
       uuid:
         specifier: ^11.0.5
         version: 11.1.0
@@ -1684,6 +1687,9 @@ packages:
   jpeg-js@0.4.4:
     resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
 
+  jsbn@1.1.0:
+    resolution: {integrity: sha512-4bYVV3aAMtDTTu4+xsDYa6sy9GyJ69/amsu9sYF2zqjiEoZA5xJi3BrfX3uY+/IekIu7MwdObdbDWpoZdBv3/A==}
+
   json-buffer@3.0.0:
     resolution: {integrity: sha512-CuUqjv0FUZIdXkHPI8MezCnFCdaTAacej1TZYulLoAg1h/PhwkdXFN4V/gzY4g+fMBCOV2xF+rp7t2XD2ns/NQ==}
 
@@ -2379,6 +2385,9 @@ packages:
   slash@4.0.0:
     resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
     engines: {node: '>=12'}
+
+  sm-crypto@0.3.13:
+    resolution: {integrity: sha512-ztNF+pZq6viCPMA1A6KKu3bgpkmYti5avykRHbcFIdSipFdkVmfUw2CnpM2kBJyppIalqvczLNM3wR8OQ0pT5w==}
 
   sort-keys-length@1.0.1:
     resolution: {integrity: sha512-GRbEOUqCxemTAk/b32F2xa8wDTs+Z1QHOkbhJDQTvv/6G3ZkbJ+frYWsTcc7cBB3Fu4wy4XlLCuNtJuMn7Gsvw==}
@@ -4466,6 +4475,8 @@ snapshots:
 
   jpeg-js@0.4.4: {}
 
+  jsbn@1.1.0: {}
+
   json-buffer@3.0.0: {}
 
   json-buffer@3.0.1: {}
@@ -5167,6 +5178,10 @@ snapshots:
   slash@3.0.0: {}
 
   slash@4.0.0: {}
+
+  sm-crypto@0.3.13:
+    dependencies:
+      jsbn: 1.1.0
 
   sort-keys-length@1.0.1:
     dependencies:

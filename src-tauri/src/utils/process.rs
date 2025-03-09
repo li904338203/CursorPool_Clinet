@@ -6,7 +6,7 @@ use crate::utils::paths::AppPaths;
 const MAX_ATTEMPTS: i32 = 2;
 const RETRY_DELAY: Duration = Duration::from_secs(1);
 const CLEANUP_DELAY: Duration = Duration::from_secs(1);
-const CURSOR_POOL_NAME: &str = "cursor-pool";
+const CURSOR_POOL_NAME: &str = "love-cursor";
 
 pub struct ProcessManager;
 
@@ -74,7 +74,7 @@ impl ProcessManager {
         Ok(())
     }
 
-    /// 检查是否有其他 Cursor Pool 实例在运行
+    /// 检查是否有其他 Cursor Agent 实例在运行
     pub fn is_other_cursor_pool_running(&self) -> bool {
         if let Ok(processes) = self.get_cursor_pool_processes() {
             processes.len() > 1  // 大于1说明有其他实例
@@ -83,7 +83,7 @@ impl ProcessManager {
         }
     }
     
-    /// 终止其他所有 Cursor Pool 实例
+    /// 终止其他所有 Cursor Agent 实例
     pub fn kill_other_cursor_pool_processes(&self) -> Result<(), String> {
         let current_pid = std::process::id().to_string();
         
@@ -104,7 +104,7 @@ impl ProcessManager {
         Ok(())
     }
 
-    /// 获取所有 Cursor Pool 进程的 PID
+    /// 获取所有 Cursor Agent 进程的 PID
     fn get_cursor_pool_processes(&self) -> Result<Vec<String>, String> {
         let (cmd, args) = match std::env::consts::OS {
             "windows" => ("tasklist", vec!["/FO", "CSV", "/NH"]),
@@ -123,14 +123,14 @@ impl ProcessManager {
         Ok(self.parse_cursor_pool_processes(&output_str))
     }
 
-    /// 解析 Cursor Pool 进程列表
+    /// 解析 Cursor Agent 进程列表
     fn parse_cursor_pool_processes(&self, output: &str) -> Vec<String> {
         let mut processes = Vec::new();
         
         for line in output.lines() {
             let lower_line = line.to_lowercase();
             
-            // 检查是否为 Cursor Pool 进程
+            // 检查是否为 Cursor Agent 进程
             if lower_line.contains(CURSOR_POOL_NAME) {
                 if let Some(pid) = self.extract_pid(line) {
                     processes.push(pid);

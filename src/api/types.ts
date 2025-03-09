@@ -15,6 +15,8 @@ export interface UserInfo {
   username: string
   email: string
   credits: number
+  balance: number
+  bonus: number
   usage: {
     'gpt-4': {
       numRequests: number
@@ -45,12 +47,20 @@ export interface LoginRequest {
   username: string
   password: string
   deviceId: string
+  tenantId?: string
   smsCode?: string
+}
+
+// 注册请求
+export interface RegisterRequest {
+  tenantId: string
+  account: string
+  password: string
 }
 
 // 登录响应
 export interface LoginResponse {
-  apiKey?: string
+  accessToken?: string
 }
 
 // 检查用户请求
@@ -221,4 +231,24 @@ export interface DisclaimerResponse {
 export interface ResetMachineIdRequest {
   forceKill: boolean
   machineId?: string  // 可选参数
+}
+
+export interface GetTenantIdResponse {
+  tenantId: string
+}
+
+export interface UserDetailResponse {
+  code: number
+  success: boolean
+  data: {
+    id: string
+    account: string
+    realName: string
+    balance: number
+    bonus: number
+    cursorAccountsId: number
+    roleName: string
+    deptName: string
+  }
+  msg: string
 }
