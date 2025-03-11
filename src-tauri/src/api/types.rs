@@ -237,3 +237,12 @@ pub struct ResetPasswordRequest {
 pub struct DisclaimerResponse {
     pub content: String,
 }
+
+// 新接口的响应结构
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewApiResponse<T> {
+    pub code: i32,
+    pub success: bool,
+    pub data: T,
+    pub msg: String,
+}

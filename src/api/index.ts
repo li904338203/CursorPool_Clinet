@@ -15,7 +15,8 @@ import type {
     ActivateResponse,
     DisclaimerResponse,
     RegisterRequest,
-    UserDetailResponse
+    UserDetailResponse,
+    UserAmountResponse
 } from './types'
 
 // 错误处理
@@ -159,21 +160,40 @@ export async function getUserInfo(token: string): Promise<UserInfo> {
         // 获取用户详细信息
         const userDetail = await getUserDetail(token);
         
+        // 获取用户额度信息
+        const userAmount = await getUserAmount(token);
+        
+        // 计算总额度和已使用额度
+        let totalAmount = 0;
+        let totalUsed = 0;
+        
+        // 计算所有卡密的总额度和已使用额度
+        if (userAmount.cardKeyDetailsList && userAmount.cardKeyDetailsList.length > 0) {
+            userAmount.cardKeyDetailsList.forEach(card => {
+                totalAmount += card.amount;
+                totalUsed += card.used;
+            });
+        } else {
+            // 如果没有卡密详情，使用总额度
+            totalAmount = userAmount.amount;
+            totalUsed = userAmount.used;
+        }
+        
         // 构造用户信息
         const userInfo: UserInfo = {
-            totalCount: userDetail.data.balance + userDetail.data.bonus,
-            usedCount: 0,     // 这里可能需要从其他接口获取已使用额度
+            totalCount: totalAmount,
+            usedCount: totalUsed,
             expireTime: Date.now() + 30 * 24 * 60 * 60 * 1000, // 默认30天
             level: 1,         // 默认等级
             isExpired: false,
             username: userDetail.data.realName || userDetail.data.account,
             email: '',
-            credits: userDetail.data.balance + userDetail.data.bonus,
-            balance: userDetail.data.balance,
-            bonus: userDetail.data.bonus,
+            credits: totalAmount - totalUsed,
+            balance: totalAmount - totalUsed,
+            bonus: 0,
             usage: {
                 'gpt-4': {
-                    numRequests: 0
+                    numRequests: totalUsed
                 },
                 'gpt-3.5-turbo': {
                     numRequests: 0
@@ -473,4 +493,33 @@ export async function getTenantId(account: string): Promise<string> {
         console.error('查找用户失败:', error);
         throw new ApiError(error instanceof Error ? error.message : 'Failed to get tenant ID');
     }
+}
+
+// 获取用户额度信息
+export async function getUserAmount(token: string): Promise<UserAmountResponse['data']> {
+  try {
+    // 使用fetch直接调用API，修改为POST请求
+    const response = await fetch('http://27.25.153.228:8080/api/blade-system/user/getAmount', {
+      method: 'POST',
+      headers: {
+        'Blade-Auth': `bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({}) // 空对象作为请求体
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data: UserAmountResponse = await response.json();
+    
+    if (!data.success || data.code !== 200) {
+      throw new Error(data.msg || '获取用户额度失败');
+    }
+    
+    return data.data;
+  } catch (error) {
+    throw new ApiError(error instanceof Error ? error.message : '获取用户额度失败');
+  }
 }

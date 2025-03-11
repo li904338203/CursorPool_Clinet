@@ -243,19 +243,42 @@ pub async fn get_user_info(
 #[tauri::command]
 pub async fn activate(
     client: State<'_, super::client::ApiClient>,
-    api_key: String,
+    token: String,
     code: String,
 ) -> Result<ApiResponse<ActivateResponse>, String> {
+    // 构造新的请求体
+    let request_body = serde_json::json!({
+        "cardKey": code
+    });
+
+    // 发送请求到新的接口地址
     let response = client
         .0
-        .post(format!("{}/user/activate", get_base_url()))
-        .header("Authorization", format!("Bearer {}", api_key))
-        .json(&ActivateRequest { code })
+        .post("http://27.25.153.228:8080/api/blade-system/cardKey/useNew")
+        .header("Blade-Auth", format!("bearer {}", token))
+        .json(&request_body)
         .send()
         .await
         .map_err(|e| e.to_string())?;
 
-    response.json().await.map_err(|e| e.to_string())
+    // 解析响应
+    let new_response: NewApiResponse<bool> = response.json().await.map_err(|e| e.to_string())?;
+    
+    // 如果请求成功，返回一个兼容原有格式的响应
+    if new_response.success && new_response.code == 200 {
+        // 返回一个兼容原有格式的响应
+        Ok(ApiResponse {
+            status: "success".to_string(),
+            message: new_response.msg,
+            data: Some(ActivateResponse {
+                expire_time: (chrono::Utc::now() + chrono::Duration::days(30)).timestamp() * 1000, // 默认30天过期
+                level: 1, // 默认等级
+            }),
+        })
+    } else {
+        // 如果请求失败，返回错误信息
+        Err(new_response.msg)
+    }
 }
 
 #[tauri::command]

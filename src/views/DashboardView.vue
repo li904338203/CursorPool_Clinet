@@ -735,12 +735,13 @@ const activationLoading = ref(false)
 const activationError = ref('')
 const pendingCreditAction = ref<'account' | 'quick' | null>(null)
 
-// 计算用户积分
+// 计算用户可用积分
 const userCredits = computed(() => {
   if (!deviceInfo.value?.userInfo) {
     return 0
   }
-  return (deviceInfo.value.userInfo.totalCount - deviceInfo.value.userInfo.usedCount) * 50
+  // 计算可用额度为总额度减去已使用额度
+  return deviceInfo.value.userInfo!.totalCount - deviceInfo.value.userInfo!.usedCount
 })
 
 // 添加加载状态
@@ -909,15 +910,16 @@ const greeting = computed(() => {
                     <n-space :size="0">
                       <n-number-animation 
                         :from="0" 
-                        :to="(deviceInfo.userInfo?.balance || 0) + (deviceInfo.userInfo?.bonus || 0)"
+                        :to="deviceInfo.userInfo?.usedCount || 0"
                         :duration="1000"
                       />
+                      <span>/{{ deviceInfo.userInfo?.totalCount || 0 }}</span>
                     </n-space>
                   </n-space>
                   <n-progress
                     type="line"
                     status="success"
-                    :percentage="100"
+                    :percentage="deviceInfo.userInfo ? Math.min(100, Math.round((deviceInfo.userInfo.usedCount / (deviceInfo.userInfo.totalCount || 1)) * 100)) : 0"
                     :show-indicator="false"
                     :height="12"
                     :border-radius="6"
@@ -1127,7 +1129,7 @@ const greeting = computed(() => {
             <div style="margin-bottom: 16px">
               <p>您当前对话额度不足，账户切换需要消耗50额度。</p>
               <p style="margin-top: 12px; color: #ff4d4f;">
-                当前额度: {{ userCredits }}，还需要: {{ Math.max(0, 50 - userCredits) }} 额度
+                当前可用额度: {{ deviceInfo.userInfo ? deviceInfo.userInfo.totalCount - deviceInfo.userInfo.usedCount : 0 }}，还需要: {{ Math.max(0, 50 - (deviceInfo.userInfo ? deviceInfo.userInfo.totalCount - deviceInfo.userInfo.usedCount : 0)) }} 额度
               </p>
             </div>
             

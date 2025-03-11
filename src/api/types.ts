@@ -252,3 +252,32 @@ export interface UserDetailResponse {
   }
   msg: string
 }
+
+// 用户额度信息响应
+export interface UserAmountResponse {
+  code: number
+  success: boolean
+  data: {
+    amount: number
+    used: number
+    cardKeyDetailsList: CardKeyDetail[]
+  }
+  msg: string
+}
+
+export interface CardKeyDetail {
+  id: string
+  createUser: string
+  createDept: string
+  createTime: string
+  updateUser: string
+  updateTime: string
+  status: number
+  isDeleted: number
+  userId: number
+  userName: string
+  cardKeyId: string
+  amount: number
+  used: number
+  expireTime: string
+}
