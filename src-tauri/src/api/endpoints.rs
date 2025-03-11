@@ -1,9 +1,15 @@
 use super::client::get_base_url;
-use super::types::*;
+use super::types::{
+    ApiResponse, UserInfo, LoginResponse, CheckUserResponse, SendCodeResponse,
+    ActivateResponse, AccountInfo, AccountDetail, CursorUserInfo, CursorUsageInfo,
+    VersionInfo, PublicInfo, DisclaimerResponse, NewApiResponse, NewAccountData,
+    ResetPasswordRequest, CheckUserRequest, SendCodeRequest, ChangePasswordRequest,
+};
 use tauri::State;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::env;
+use log;
 
 #[derive(Serialize, Deserialize)]
 pub struct BugReportRequest {
@@ -269,7 +275,7 @@ pub async fn activate(
         // 返回一个兼容原有格式的响应
         Ok(ApiResponse {
             status: "success".to_string(),
-            message: new_response.msg,
+            message: new_response.msg.unwrap_or_else(|| "激活成功".to_string()),
             data: Some(ActivateResponse {
                 expire_time: (chrono::Utc::now() + chrono::Duration::days(30)).timestamp() * 1000, // 默认30天过期
                 level: 1, // 默认等级
@@ -277,7 +283,7 @@ pub async fn activate(
         })
     } else {
         // 如果请求失败，返回错误信息
-        Err(new_response.msg)
+        Err(new_response.msg.unwrap_or_else(|| "激活失败".to_string()))
     }
 }
 
@@ -314,33 +320,74 @@ pub async fn change_password(
 #[tauri::command]
 pub async fn get_account(
     client: State<'_, super::client::ApiClient>,
-    api_key: String,
+    token: String,
 ) -> Result<ApiResponse<AccountDetail>, String> {
+    log::info!("开始调用 get_account 函数，接收到的参数: token={}", token);
+    
+    let url = "http://27.25.153.228:8080/api/blade-system/user/switchCursorAccount";
+    log::info!("请求 URL: {}", url);
+    
     let response = client
         .0
-        .get(format!("{}/account/get", get_base_url()))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .post(url)
+        .header("Blade-Auth", format!("bearer {}", token))
         .send()
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| {
+            log::error!("调用 switchCursorAccount 接口失败: {}", e);
+            e.to_string()
+        })?;
 
-    let account_response: ApiResponse<AccountInfo> = response
-        .json()
-        .await
-        .map_err(|e| e.to_string())?;
+    let status = response.status();
+    log::info!("API 响应状态码: {}", status);
     
-    // 只返回需要的字段
+    if !status.is_success() {
+        return Err(format!("请求失败，状态码: {}", status));
+    }
+    
+    // 记录原始响应内容
+    let response_text = response.text().await.map_err(|e| {
+        log::error!("读取响应内容失败: {}", e);
+        e.to_string()
+    })?;
+    log::info!("API 原始响应内容: {}", response_text);
+    
+    // 解析响应
+    let new_response: NewApiResponse<NewAccountData> = serde_json::from_str(&response_text).map_err(|e| {
+        log::error!("解析 switchCursorAccount 接口响应失败: {}", e);
+        e.to_string()
+    })?;
+    
+    log::info!("API 响应成功状态: {}", new_response.success);
+    
+    if !new_response.success {
+        return Err(new_response.msg.unwrap_or_else(|| "未知错误".to_string()));
+    }
+    
+    // 确保 data 字段存在
+    let new_account_data = match new_response.data {
+        Some(data) => data,
+        None => {
+            log::error!("响应中缺少 data 字段");
+            return Err("响应中缺少 data 字段".to_string());
+        }
+    };
+    
+    log::info!("成功获取账户数据: id={}, email={}", new_account_data.id, new_account_data.email);
+    
+    // 将新的响应格式映射到旧的格式，保持前端兼容性
+    let account_detail = AccountDetail {
+        email: new_account_data.email,
+        user_id: new_account_data.user_id,
+        token: new_account_data.access_token,
+    };
+    
+    log::info!("返回账户详情: email={}, user_id={}", account_detail.email, account_detail.user_id);
+    
     Ok(ApiResponse {
-        status: account_response.status,
-        message: account_response.message,
-        data: account_response.data.map(|account_info| {
-            let parts: Vec<&str> = account_info.token.split("%3A%3A").collect();
-            AccountDetail {
-                email: account_info.email,
-                user_id: parts[0].to_string(),
-                token: parts[1].to_string(),
-            }
-        }),
+        status: "success".to_string(),
+        message: new_response.msg.unwrap_or_else(|| "".to_string()),
+        data: Some(account_detail),
     })
 }
 

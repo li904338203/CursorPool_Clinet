@@ -1,5 +1,5 @@
 [package]
-name = "love-cursor"
+name = "cursor-agent"
 version = "0.1.0"
 description = "Cursor Agent App"
 authors = ["Sanyela"]
@@ -12,7 +12,7 @@ rust-version = "1.60"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "cursor_pool_lib"
+name = "cursor_agent_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -41,6 +41,7 @@ chrono = "0.4"
 os_info = "3.7"
 sys-info = "0.9"
 tauri-plugin-positioner = { version = "2.0.0" }
+log = "0.4"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.52", features = [

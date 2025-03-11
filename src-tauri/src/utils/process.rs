@@ -6,7 +6,7 @@ use crate::utils::paths::AppPaths;
 const MAX_ATTEMPTS: i32 = 2;
 const RETRY_DELAY: Duration = Duration::from_secs(1);
 const CLEANUP_DELAY: Duration = Duration::from_secs(1);
-const CURSOR_POOL_NAME: &str = "love-cursor";
+const CURSOR_POOL_NAME: &str = "cursor-agent";
 
 pub struct ProcessManager;
 
@@ -77,7 +77,7 @@ impl ProcessManager {
     /// 检查是否有其他 Cursor Agent 实例在运行
     pub fn is_other_cursor_pool_running(&self) -> bool {
         if let Ok(processes) = self.get_cursor_pool_processes() {
-            processes.len() > 1  // 大于1说明有其他实例
+            processes.len() > 1
         } else {
             false
         }
@@ -187,7 +187,7 @@ impl ProcessManager {
             let lower_line = line.to_lowercase();
             
             // 跳过自身进程
-            if lower_line.contains("cursor-pool") {
+            if lower_line.contains("cursor-agent") {
                 continue;
             }
 

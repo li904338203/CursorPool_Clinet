@@ -104,7 +104,7 @@ const tourSteps: Array<{
     }
   },
   {
-    element: '.cursor-pool-usage',
+    element: '.cursor-agent-usage',
     popover: {
       title: 'Cursor Agent 额度剩余量',
       description: '当前账户的Cursor Agent额度剩余情况, 不是Cursor的使用情况, 您购买的额度从这里查看',

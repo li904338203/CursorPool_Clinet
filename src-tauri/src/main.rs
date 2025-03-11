@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use cursor_pool_lib::*;
+use cursor_agent_lib::*;
 use tauri::Builder;
 use tauri::generate_handler;
 use tauri::generate_context;

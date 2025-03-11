@@ -202,7 +202,7 @@ impl UpdateBlocker {
         if app_path.exists() {
             // 使用 osascript 获取 root 权限处理文件
             let script = format!(
-                "do shell script \"mv '{}' '{}.backup' && touch '{}' && chmod a-w '{}'\" with prompt \"Cursor-Pool 需要获取权限来修改文件\"",
+                "do shell script \"mv '{}' '{}.backup' && touch '{}' && chmod a-w '{}'\" with prompt \"Cursor Agent 需要获取权限来修改文件\"",
                 app_path.to_string_lossy(),
                 app_path.to_string_lossy(),
                 app_path.to_string_lossy(),
@@ -327,7 +327,7 @@ impl UpdateBlocker {
         if app_path.exists() {
             // 使用 osascript 获取 root 权限处理文件
             let script = format!(
-                "do shell script \"rm -f '{}' && mv '{}.backup' '{}'\" with prompt \"Cursor-Pool 需要获取权限来修改文件\"",
+                "do shell script \"rm -f '{}' && mv '{}.backup' '{}'\" with prompt \"Cursor Agent 需要获取权限来修改文件\"",
                 app_path.to_string_lossy(),
                 app_path.to_string_lossy(),
                 app_path.to_string_lossy()

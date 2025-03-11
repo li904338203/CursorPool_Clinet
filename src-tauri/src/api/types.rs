@@ -238,11 +238,53 @@ pub struct DisclaimerResponse {
     pub content: String,
 }
 
-// 新接口的响应结构
+// 新的 API 响应类型
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NewApiResponse<T> {
     pub code: i32,
     pub success: bool,
-    pub data: T,
-    pub msg: String,
+    pub data: Option<T>,
+    pub msg: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewAccountData {
+    pub id: String,
+    #[serde(rename = "createUser", default)]
+    pub create_user: i64,
+    #[serde(rename = "createDept", default)]
+    pub create_dept: i64,
+    #[serde(rename = "createTime")]
+    #[serde(default = "empty_string")]
+    pub create_time: String,
+    #[serde(rename = "updateUser")]
+    #[serde(default = "empty_string")]
+    pub update_user: String,
+    #[serde(rename = "updateTime")]
+    #[serde(default = "empty_string")]
+    pub update_time: String,
+    #[serde(default)]
+    pub status: i32,
+    #[serde(rename = "isDeleted", default)]
+    pub is_deleted: i32,
+    pub email: String,
+    #[serde(skip_serializing)]  // 不序列化密码字段，增加安全性
+    pub password: Option<String>,
+    #[serde(rename = "accessToken")]
+    pub access_token: String,
+    #[serde(rename = "refreshToken")]
+    pub refresh_token: String,
+    #[serde(default)]
+    pub state: i32,
+    #[serde(rename = "userBy")]
+    pub user_by: Option<String>,
+    #[serde(rename = "userId")]
+    pub user_id: String,
+    #[serde(rename = "userAt")]
+    pub user_at: Option<String>,
+}
+
+// 用于字符串字段的默认值函数
+fn empty_string() -> String {
+    "".to_string()
 }

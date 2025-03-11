@@ -14,7 +14,7 @@ pub fn set_read_only(path: &Path) -> Result<(), Error> {
     if cfg!(target_os = "macos") {
         // 使用 osascript 获取 root 权限设置只读
         let script = format!(
-            "do shell script \"chmod a-w '{}'\" with prompt \"Cursor-Pool 需要获取权限来修改文件\"",
+            "do shell script \"chmod a-w '{}'\" with prompt \"Cursor Agent 需要获取权限来修改文件\"",
             path.to_string_lossy()
         );
 
@@ -43,7 +43,7 @@ pub fn unset_read_only(path: &Path) -> Result<(), Error> {
     if cfg!(target_os = "macos") {
         // 使用 osascript 获取 root 权限取消只读
         let script = format!(
-            "do shell script \"chmod u+w '{}'\" with prompt \"Cursor-Pool 需要获取权限来修改文件\"",
+            "do shell script \"chmod u+w '{}'\" with prompt \"Cursor Agent 需要获取权限来修改文件\"",
             path.to_string_lossy()
         );
 

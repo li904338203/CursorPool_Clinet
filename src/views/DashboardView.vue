@@ -904,7 +904,7 @@ const greeting = computed(() => {
             <n-card :title="i18n.dashboard.usageStats" style="height: 100%; user-select: none;">
               <n-space vertical :size="24" style="height: 100%; justify-content: space-around;">
                 <!-- 账户使用统计 -->
-                <n-space vertical :size="8" class="cursor-pool-usage">
+                <n-space vertical :size="8" class="cursor-agent-usage">
                   <n-space justify="space-between">
                     <span>{{ i18n.dashboard.cpUsage }}</span>
                     <n-space :size="0">

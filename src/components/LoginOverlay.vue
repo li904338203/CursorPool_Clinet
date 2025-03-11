@@ -103,7 +103,8 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 const passwordInputStatus = computed(() => {
   const password = formData.value.password
   if (!password) return undefined
-  if (!passwordRegex.test(password)) return 'error'
+  // 只在注册模式下校验密码格式
+  if (isRegisterMode.value && !passwordRegex.test(password)) return 'error'
   return undefined
 })
 
@@ -111,7 +112,8 @@ const passwordInputStatus = computed(() => {
 const passwordInputFeedback = computed(() => {
   const password = formData.value.password
   if (!password) return ''
-  if (!passwordRegex.test(password)) {
+  // 只在注册模式下显示密码格式提示
+  if (isRegisterMode.value && !passwordRegex.test(password)) {
     return messages[currentLang.value].login.passwordInvalid
   }
   return ''
@@ -125,6 +127,12 @@ async function handleSubmit() {
   }
 
   if (!formData.value.password) {
+    message.error(messages[currentLang.value].login.passwordError)
+    return
+  }
+
+  // 注册模式下校验密码格式
+  if (isRegisterMode.value && !passwordRegex.test(formData.value.password)) {
     message.error(messages[currentLang.value].login.passwordInvalid)
     return
   }
@@ -303,7 +311,7 @@ const handleForgotPassword = async () => {
           <n-input 
             v-model:value="formData.password"
             type="password"
-            :placeholder="i18n.login.passwordPlaceholder"
+            :placeholder="isRegisterMode ? '密码必须包含大小写字母和数字，至少8位' : i18n.login.passwordPlaceholder"
             :disabled="loading"
           />
           <template #feedback>

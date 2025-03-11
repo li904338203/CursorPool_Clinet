@@ -79,7 +79,7 @@ pub fn request_admin_privileges(exe_path: &str) -> Result<bool, String> {
         let mut cmd = Command::new("osascript");
         cmd.arg("-e")
             .arg(format!(
-                "do shell script \"\\\"{}\\\" {}\" with prompt \"Cursor-Pool 需要获取权限来修改文件\"",
+                "do shell script \"\\\"{}\\\" {}\" with prompt \"Cursor Agent 需要获取权限来修改文件\"",
                 exe_path,
                 args.join(" ")
             ));
