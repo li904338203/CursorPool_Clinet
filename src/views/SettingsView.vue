@@ -64,6 +64,13 @@ const pendingControlAction = ref<'disableUpdate' | 'restoreUpdate' | 'applyHook'
 const activateLoading = ref(false)
 const passwordChangeLoading = ref(false)
 
+// 添加额度迁移相关状态
+const creditTransferLoading = ref(false)
+
+// 添加额度迁移确认框状态
+const showCreditTransferModal = ref(false)
+const creditTransferConfirmLoading = ref(false)
+
 // 处理退出登录
 const handleLogout = async () => {
   try {
@@ -229,6 +236,51 @@ const handleControlForceKill = async () => {
   }
 }
 
+// 处理额度迁移
+const handleCreditTransfer = async () => {
+  showCreditTransferModal.value = true
+}
+
+// 确认额度迁移
+const confirmCreditTransfer = async () => {
+  try {
+    creditTransferConfirmLoading.value = true
+    
+    // 获取token
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      throw new Error('未找到登录凭证，请重新登录')
+    }
+    
+    // 调用服务器接口
+    const response = await fetch('http://27.25.153.228:8080/api/blade-system/cardKey/balanceToCardKey', {
+      method: 'POST',
+      headers: {
+        'Blade-Auth': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    const data = await response.json()
+    
+    if (data.success && data.code === 200) {
+      message.success(messages[currentLang.value].message.creditTransferSuccess)
+      // 关闭确认框
+      setTimeout(() => {
+        showCreditTransferModal.value = false
+      }, 1000)
+    } else {
+      // 显示错误信息
+      message.error(data.msg || '额度迁移失败')
+    }
+  } catch (error) {
+    console.error('额度迁移失败:', error)
+    message.error('额度迁移失败: ' + (error instanceof Error ? error.message : String(error)))
+  } finally {
+    creditTransferConfirmLoading.value = false
+  }
+}
+
 // 在组件挂载时检查控制状态
 onMounted(async () => {
   await checkControlStatus()
@@ -302,21 +354,32 @@ onMounted(async () => {
           :label="messages[currentLang].settings.activationCode"
           path="activationCode"
         >
-          <n-input-group style="width: 360px">
-            <n-input
-              v-model:value="formValue.activationCode"
-              :placeholder="messages[currentLang].settings.activationCode"
-              size="large"
-            />
+          <n-space align="center" :size="15">
+            <n-input-group style="width: 360px">
+              <n-input
+                v-model:value="formValue.activationCode"
+                :placeholder="messages[currentLang].settings.activationCode"
+                size="large"
+              />
+              <n-button
+                type="primary"
+                @click="handleActivate"
+                :loading="activateLoading"
+                size="large"
+              >
+                {{ messages[currentLang].settings.activate }}
+              </n-button>
+            </n-input-group>
+            
             <n-button
-              type="primary"
-              @click="handleActivate"
-              :loading="activateLoading"
+              type="info"
+              @click="handleCreditTransfer"
+              :loading="creditTransferLoading"
               size="large"
             >
-              {{ messages[currentLang].settings.activate }}
+              {{ messages[currentLang].settings.creditTransfer }}
             </n-button>
-          </n-input-group>
+          </n-space>
         </n-form-item>
 
         <n-form-item>
@@ -415,6 +478,29 @@ onMounted(async () => {
         <n-space justify="end">
           <n-button type="warning" @click="handleControlForceKill">
             {{ i18n.systemControl.messages.forceKillConfirm }}
+          </n-button>
+        </n-space>
+      </template>
+    </n-modal>
+
+    <!-- 额度迁移确认框 -->
+    <n-modal
+      v-model:show="showCreditTransferModal"
+      preset="dialog"
+      title="确认额度迁移"
+      :closable="true"
+      :mask-closable="true"
+    >
+      <template #default>
+        是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？
+      </template>
+      <template #action>
+        <n-space justify="end">
+          <n-button @click="showCreditTransferModal = false">
+            {{ i18n.systemControl.messages.cancel }}
+          </n-button>
+          <n-button type="primary" @click="confirmCreditTransfer" :loading="creditTransferConfirmLoading">
+            {{ i18n.systemControl.messages.confirm }}
           </n-button>
         </n-space>
       </template>

@@ -95,6 +95,7 @@ export const messages = {
       activation: '激活码兑换',
       activationCode: '激活码',
       activate: '激活',
+      creditTransfer: '额度迁移',
       changePassword: '修改密码',
       currentPassword: '当前密码',
       newPassword: '新密码',
@@ -125,7 +126,8 @@ export const messages = {
       pleaseInputPassword: '请填写完整密码信息',
       passwordNotMatch: '两次输入的新密码不一致',
       passwordChangeSuccess: '密码修改成功',
-      passwordChangeFailed: '密码修改失败'
+      passwordChangeFailed: '密码修改失败',
+      creditTransferSuccess: '额度迁移成功'
     },
     systemControl: {
       title: '系统控制',
@@ -148,7 +150,10 @@ export const messages = {
         applyHookSuccess: '注入客户端成功',
         restoreHookSuccess: '恢复客户端成功',
         cursorRunning: 'Cursor进程正在运行, 请先关闭Cursor',
-        forceKillConfirm: '我已保存, 强制关闭'
+        forceKillConfirm: '我已保存, 强制关闭',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: '禁用自动更新',
@@ -279,6 +284,7 @@ export const messages = {
       activation: 'Activation',
       activationCode: 'Activation Code',
       activate: 'Activate',
+      creditTransfer: 'Credit Transfer',
       changePassword: 'Change Password',
       currentPassword: 'Current Password',
       newPassword: 'New Password',
@@ -309,7 +315,8 @@ export const messages = {
       pleaseInputPassword: 'Please input all password fields',
       passwordNotMatch: 'New passwords do not match',
       passwordChangeSuccess: 'Password changed successfully',
-      passwordChangeFailed: 'Failed to change password'
+      passwordChangeFailed: 'Failed to change password',
+      creditTransferSuccess: 'Credit transfer successful'
     },
     systemControl: {
       title: 'System Control',
@@ -332,7 +339,10 @@ export const messages = {
         applyHookSuccess: 'Hook applied successfully',
         restoreHookSuccess: 'Hook restored successfully',
         cursorRunning: 'Cursor is running, please save your work before continuing!',
-        forceKillConfirm: 'I have saved, force close'
+        forceKillConfirm: 'I have saved, force close',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: 'Disable auto update',
@@ -455,6 +465,7 @@ export const messages = {
       activation: 'アクティベーション',
       activationCode: 'アクティベーションコード',
       activate: '有効化',
+      creditTransfer: 'クレジット転送',
       changePassword: 'パスワード変更',
       currentPassword: '現在のパスワード',
       newPassword: '新しいパスワード',
@@ -508,7 +519,10 @@ export const messages = {
         applyHookSuccess: 'フックを適用しました',
         restoreHookSuccess: 'フックを復元しました',
         cursorRunning: 'Cursorが実行中です。続行する前に作業を保存してください！',
-        forceKillConfirm: '保存しました、強制終了します'
+        forceKillConfirm: '保存しました、強制終了します',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '確認',
+        cancel: 'キャンセル'
       },
       history: {
         disableUpdate: '自動更新を無効化',
@@ -631,6 +645,7 @@ export const messages = {
       activation: 'Activation',
       activationCode: 'Code d\'activation',
       activate: 'Activer',
+      creditTransfer: 'Transfert de crédit',
       changePassword: 'Changer le mot de passe',
       currentPassword: 'Current Password',
       newPassword: 'Nouveau mot de passe',
@@ -684,7 +699,10 @@ export const messages = {
         applyHookSuccess: 'Hook appliqué avec succès',
         restoreHookSuccess: 'Hook restauré avec succès',
         cursorRunning: 'Cursor est en cours d\'exécution, veuillez sauvegarder votre travail avant de continuer !',
-        forceKillConfirm: 'J\'ai sauvegardé, forzar cierre'
+        forceKillConfirm: 'J\'ai sauvegardé, forzar cierre',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: 'Désactiver la mise à jour automatique',
@@ -796,6 +814,7 @@ export const messages = {
       activation: 'Aktivierung',
       activationCode: 'Aktivierungscode',
       activate: 'Aktivieren',
+      creditTransfer: 'Guthaben übertragen',
       changePassword: 'Passwort ändern',
       currentPassword: 'Aktuelles Passwort',
       newPassword: 'Neues Passwort',
@@ -849,7 +868,10 @@ export const messages = {
         applyHookSuccess: 'Hook erfolgreich angewendet',
         restoreHookSuccess: 'Hook erfolgreich wiederhergestellt',
         cursorRunning: 'Cursor läuft, bitte speichern Sie Ihre Arbeit vor dem Fortfahren!',
-        forceKillConfirm: 'Ich habe gespeichert, Zwangsbeenden'
+        forceKillConfirm: 'Ich habe gespeichert, Zwangsbeenden',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: 'Automatische Updates deaktivieren',
@@ -961,6 +983,7 @@ export const messages = {
       activation: '활성화',
       activationCode: '활성화 코드',
       activate: '활성화하기',
+      creditTransfer: '크레딧 이전',
       changePassword: '비밀번호 변경',
       currentPassword: '현재 비밀번호',
       newPassword: '새 비밀번호',
@@ -1014,7 +1037,10 @@ export const messages = {
         applyHookSuccess: '훅이 적용되었습니다',
         restoreHookSuccess: '훅이 복원되었습니다',
         cursorRunning: 'Cursor가 실행 중입니다. 계속하기 전에 작업을 저장하세요!',
-        forceKillConfirm: '저장했습니다, 강제 종료'
+        forceKillConfirm: '저장했습니다, 강제 종료',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: '자동 업데이트 비활성화',
@@ -1126,6 +1152,7 @@ export const messages = {
       activation: 'Активация',
       activationCode: 'Код активации',
       activate: 'Активировать',
+      creditTransfer: 'Перевод кредитов',
       changePassword: 'Изменить пароль',
       currentPassword: 'Текущий пароль',
       newPassword: 'Новый пароль',
@@ -1179,7 +1206,10 @@ export const messages = {
         applyHookSuccess: 'Hook успешно применен',
         restoreHookSuccess: 'Hook успешно восстановлен',
         cursorRunning: 'Cursor запущен, пожалуйста, сохраните работу перед продолжением!',
-        forceKillConfirm: 'He guardado, forzar cierre'
+        forceKillConfirm: 'He guardado, forzar cierre',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: 'Отключить автообновление',
@@ -1204,7 +1234,7 @@ export const messages = {
       cursorRunning: 'Cursor в работе',
       cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
       closingCursor: 'Закрытие Cursor...',
-      forgotPassword: 'Забыли пароль?'
+      forgotPassword: 'Mot de passe oublié?'
     }
   },
   'es-AR': {
@@ -1291,6 +1321,7 @@ export const messages = {
       activation: 'Activación',
       activationCode: 'Código de activación',
       activate: 'Activar',
+      creditTransfer: 'Transferencia de crédito',
       changePassword: 'Cambiar contraseña',
       currentPassword: 'Contraseña actual',
       newPassword: 'Nueva contraseña',
@@ -1344,7 +1375,10 @@ export const messages = {
         applyHookSuccess: 'Hook aplicado con éxito',
         restoreHookSuccess: 'Hook restaurado con éxito',
         cursorRunning: 'Cursor en ejecución, por favor guarde su trabajo antes de continuar!',
-        forceKillConfirm: 'He guardado, forzar cierre'
+        forceKillConfirm: 'He guardado, forzar cierre',
+        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        confirm: '确认',
+        cancel: '取消'
       },
       history: {
         disableUpdate: 'Desactivar actualización automática',
