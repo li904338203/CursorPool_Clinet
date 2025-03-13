@@ -92,7 +92,7 @@ pub async fn login(
     tenant_id: Option<String>,
     sms_code: Option<String>,
 ) -> Result<LoginResponse, String> {
-    println!("登录请求: username={}, device_id={}, tenant_id={:?}", username, device_id, tenant_id);
+    // println!("登录请求: username={}, device_id={}, tenant_id={:?}", username, device_id, tenant_id);
     
     // 如果提供了tenant_id，直接使用；否则查找用户的tenantId
     let tenant_id = if let Some(id) = tenant_id {
@@ -107,34 +107,25 @@ pub async fn login(
             .send()
             .await
             .map_err(|e| {
-                println!("查找用户失败: {}", e);
+                // println!("查找用户失败: {}", e);
                 e.to_string()
             })?;
         
-        println!("查找用户响应状态码: {}", tenant_id_response.status());
-        
-        // 如果状态码是400，表示用户不存在
         if tenant_id_response.status() == 400 {
-            println!("用户不存在");
+            // println!("用户不存在");
             return Err("用户不存在".to_string());
         }
         
-        let tenant_id_text = tenant_id_response.text().await.map_err(|e| {
-            println!("读取查找用户响应失败: {}", e);
-            e.to_string()
-        })?;
-        
-        println!("查找用户响应内容: {}", tenant_id_text);
+        let tenant_id_text = tenant_id_response.text().await.map_err(|e| e.to_string())?;
         
         // 解析为BladeResponse格式
         let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&tenant_id_text).map_err(|e| {
-            println!("解析查找用户响应失败: {}", e);
+            // println!("解析查找用户响应失败");
             e.to_string()
         })?;
         
         // 检查是否成功
         if !blade_response.success || blade_response.code != 200 {
-            println!("查找用户失败: {}", blade_response.msg);
             return Err(blade_response.msg);
         }
         
@@ -142,63 +133,49 @@ pub async fn login(
         match blade_response.data.as_str() {
             Some(id) => id.to_string(),
             None => {
-                println!("无法获取tenantId");
+                // println!("无法获取tenantId");
                 return Err("无法获取tenantId".to_string());
             }
         }
     };
     
-    println!("使用tenantId={}", tenant_id);
-    
-    // 然后调用登录接口
     let login_url = format!(
         "http://27.25.153.228:8083/blade-auth/token?tenantId={}&account={}&password={}&type=password",
         tenant_id, username, password
     );
     
-    println!("登录URL: {}", login_url);
-    println!("Authorization: Basic c2FiZXI6c2FiZXJfc2VjcmV0");
-    
-    // 构建请求
     let request = client
         .0
         .post(login_url.clone())
         .header("Content-Type", "application/json")
         .header("Authorization", "Basic c2FiZXI6c2FiZXJfc2VjcmV0");
     
-    // 打印请求信息
-    println!("请求方法: POST");
-    println!("请求URL: {}", login_url);
-    println!("请求头: Content-Type: application/json");
-    println!("请求头: Authorization: Basic c2FiZXI6c2FiZXJfc2VjcmV0");
-    
-    // 发送请求
     let login_response = request
         .send()
         .await
         .map_err(|e| {
-            println!("登录请求失败: {}", e);
+            // println!("登录请求失败: {}", e);
             e.to_string()
         })?;
     
-    println!("登录响应状态码: {}", login_response.status());
+    // println!("登录响应状态码: {}", login_response.status());
     
     let login_text = login_response.text().await.map_err(|e| {
-        println!("读取登录响应失败: {}", e);
+        // println!("读取登录响应失败: {}", e);
         e.to_string()
     })?;
     
-    println!("登录响应内容: {}", login_text);
+    // println!("登录响应内容: {}", login_text);
     
     // 解析为BladeResponse格式
     let login_blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&login_text).map_err(|e| {
-        println!("解析登录响应失败: {}", e);
+        // println!("解析登录响应失败: {}", e);
         e.to_string()
     })?;
     
     // 检查是否成功
     if !login_blade_response.success || login_blade_response.code != 200 {
-        println!("登录失败: {}", login_blade_response.msg);
+        // println!("登录失败: {}", login_blade_response.msg);
         return Err(login_blade_response.msg);
     }
     
@@ -206,7 +183,7 @@ pub async fn login(
     let token_data = match login_blade_response.data.as_object() {
         Some(obj) => obj,
         None => {
-            println!("无法获取token数据");
+            // println!("无法获取token数据");
             return Err("无法获取token数据".to_string());
         }
     };
@@ -217,13 +194,13 @@ pub async fn login(
         None => match token_data.get("access_token").and_then(|t| t.as_str()) {
             Some(t) => t.to_string(),
             None => {
-                println!("无法获取token");
+                // println!("无法获取token");
                 return Err("无法获取token".to_string());
             }
         }
     };
     
-    println!("登录成功, token={}", token);
+    // println!("登录成功, token={}", token);
     
     Ok(LoginResponse {
         api_key: Some(token),
@@ -322,10 +299,9 @@ pub async fn get_account(
     client: State<'_, super::client::ApiClient>,
     token: String,
 ) -> Result<ApiResponse<AccountDetail>, String> {
-    log::info!("开始调用 get_account 函数，接收到的参数: token={}", token);
+    // log::info!("开始调用 get_account 函数，接收到的参数: token={}", token);
     
     let url = "http://27.25.153.228:8080/api/blade-system/user/switchCursorAccount";
-    log::info!("请求 URL: {}", url);
     
     let response = client
         .0
@@ -334,55 +310,51 @@ pub async fn get_account(
         .send()
         .await
         .map_err(|e| {
-            log::error!("调用 switchCursorAccount 接口失败: {}", e);
+            // log::error!("调用 switchCursorAccount 接口失败: {}", e);
             e.to_string()
         })?;
 
     let status = response.status();
-    log::info!("API 响应状态码: {}", status);
+    // log::info!("API 响应状态码: {}", status);
     
     if !status.is_success() {
         return Err(format!("请求失败，状态码: {}", status));
     }
     
-    // 记录原始响应内容
     let response_text = response.text().await.map_err(|e| {
-        log::error!("读取响应内容失败: {}", e);
+        // log::error!("读取响应内容失败: {}", e);
         e.to_string()
     })?;
-    log::info!("API 原始响应内容: {}", response_text);
+    // log::info!("API 原始响应内容: {}", response_text);
     
-    // 解析响应
     let new_response: NewApiResponse<NewAccountData> = serde_json::from_str(&response_text).map_err(|e| {
-        log::error!("解析 switchCursorAccount 接口响应失败: {}", e);
+        // log::error!("解析 switchCursorAccount 接口响应失败: {}", e);
         e.to_string()
     })?;
     
-    log::info!("API 响应成功状态: {}", new_response.success);
+    // log::info!("API 响应成功状态: {}", new_response.success);
     
     if !new_response.success {
         return Err(new_response.msg.unwrap_or_else(|| "未知错误".to_string()));
     }
     
-    // 确保 data 字段存在
     let new_account_data = match new_response.data {
         Some(data) => data,
         None => {
-            log::error!("响应中缺少 data 字段");
+            // log::error!("响应中缺少 data 字段");
             return Err("响应中缺少 data 字段".to_string());
         }
     };
     
-    log::info!("成功获取账户数据: id={}, email={}", new_account_data.id, new_account_data.email);
+    // log::info!("成功获取账户数据: id={}, email={}", new_account_data.id, new_account_data.email);
     
-    // 将新的响应格式映射到旧的格式，保持前端兼容性
     let account_detail = AccountDetail {
         email: new_account_data.email,
         user_id: new_account_data.user_id,
         token: new_account_data.access_token,
     };
     
-    log::info!("返回账户详情: email={}, user_id={}", account_detail.email, account_detail.user_id);
+    // log::info!("返回账户详情: email={}, user_id={}", account_detail.email, account_detail.user_id);
     
     Ok(ApiResponse {
         status: "success".to_string(),
@@ -559,8 +531,6 @@ pub async fn register(
     account: String,
     password: String,
 ) -> Result<ApiResponse<LoginResponse>, String> {
-    println!("后端收到注册请求: tenantId={}, account={}, password={}", tenantId, account, password);
-    
     let request = RegisterRequest {
         tenantId,
         account,
@@ -568,7 +538,6 @@ pub async fn register(
     };
     
     let request_json = serde_json::to_string(&request).unwrap_or_default();
-    println!("构建的请求体: {}", request_json);
     
     let response = client
         .0
@@ -579,34 +548,29 @@ pub async fn register(
         .send()
         .await
         .map_err(|e| {
-            println!("发送请求失败: {}", e);
+            // println!("发送请求失败: {}", e);
             e.to_string()
         })?;
     
-    println!("收到响应状态码: {}", response.status());
+    // println!("收到响应状态码: {}", response.status());
     
     let response_text = response.text().await.map_err(|e| {
-        println!("读取响应文本失败: {}", e);
+        // println!("读取响应文本失败: {}", e);
         e.to_string()
     })?;
     
-    println!("响应内容: {}", response_text);
-    
-    // 解析为BladeResponse格式
     let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&response_text).map_err(|e| {
-        println!("解析响应失败: {}", e);
+        // println!("解析响应失败: {}", e);
         e.to_string()
     })?;
     
-    println!("解析响应成功: code={}, success={}, msg={}", blade_response.code, blade_response.success, blade_response.msg);
+    // println!("解析响应成功: code={}, success={}, msg={}", blade_response.code, blade_response.success, blade_response.msg);
     
-    // 检查是否成功
     if !blade_response.success || blade_response.code != 200 {
-        println!("注册失败: {}", blade_response.msg);
+        // println!("注册失败: {}", blade_response.msg);
         return Err(blade_response.msg);
     }
     
-    // 构造一个ApiResponse
     let api_response = ApiResponse {
         status: "success".to_string(),
         message: blade_response.msg,
@@ -615,7 +579,7 @@ pub async fn register(
         }),
     };
     
-    println!("注册成功");
+    // println!("注册成功");
     Ok(api_response)
 }
 
@@ -624,8 +588,6 @@ pub async fn get_tenant_id(
     client: State<'_, super::client::ApiClient>,
     account: String,
 ) -> Result<ApiResponse<String>, String> {
-    println!("查找用户: account={}", account);
-    
     let response = client
         .0
         .get(format!("http://27.25.153.228:8080/api/blade-system/user/getTenantId?account={}", account))
@@ -634,45 +596,33 @@ pub async fn get_tenant_id(
         .send()
         .await
         .map_err(|e| {
-            println!("发送请求失败: {}", e);
+            // println!("发送请求失败: {}", e);
             e.to_string()
         })?;
     
-    println!("收到响应状态码: {}", response.status());
-    
     let response_text = response.text().await.map_err(|e| {
-        println!("读取响应文本失败: {}", e);
+        // println!("读取响应文本失败: {}", e);
         e.to_string()
     })?;
     
-    println!("响应内容: {}", response_text);
+    // println!("响应内容: {}", response_text);
     
-    // 解析为BladeResponse格式
     let blade_response: BladeResponse<serde_json::Value> = serde_json::from_str(&response_text).map_err(|e| {
-        println!("解析响应失败: {}", e);
+        // println!("解析响应失败: {}", e);
         e.to_string()
     })?;
     
-    println!("解析响应成功: code={}, success={}, msg={}", blade_response.code, blade_response.success, blade_response.msg);
-    
-    // 检查是否成功
     if !blade_response.success || blade_response.code != 200 {
-        println!("查找用户失败: {}", blade_response.msg);
         return Err(blade_response.msg);
     }
     
-    // 获取tenantId
     let tenant_id = match blade_response.data.as_str() {
         Some(id) => id.to_string(),
         None => {
-            println!("无法获取tenantId");
             return Err("无法获取tenantId".to_string());
         }
     };
     
-    println!("查找用户成功, tenantId={}", tenant_id);
-    
-    // 构造一个ApiResponse
     let api_response = ApiResponse {
         status: "success".to_string(),
         message: blade_response.msg,

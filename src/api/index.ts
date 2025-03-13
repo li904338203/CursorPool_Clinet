@@ -478,11 +478,11 @@ export async function launchCursor(): Promise<boolean> {
 
 export async function getTenantId(account: string): Promise<string> {
     try {
-        console.log('查找用户:', account);
+        // console.log('查找用户:', account);
         
         const response = await invoke<ApiResponse<string>>('get_tenant_id', { account });
         
-        console.log('查找用户响应:', response);
+        // console.log('查找用户响应:', response);
         
         if (response.status === 'success' && response.data) {
             return response.data;
@@ -490,7 +490,7 @@ export async function getTenantId(account: string): Promise<string> {
         
         throw new Error(response.message || '查找用户失败');
     } catch (error) {
-        console.error('查找用户失败:', error);
+        // console.error('查找用户失败:', error);
         throw new ApiError(error instanceof Error ? error.message : 'Failed to get tenant ID');
     }
 }

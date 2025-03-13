@@ -78,7 +78,7 @@ const handleUsernameBlur = async () => {
       isRegisterMode.value = false;
     }
   } catch (error) {
-    console.error('查找用户失败:', error);
+    // console.error('查找用户失败:', error);
     
     // 清除tenantId
     currentTenantId.value = null;
@@ -115,12 +115,12 @@ const passwordInputFeedback = computed(() => {
 
 // 修改处理提交的逻辑, 添加密码验证
 async function handleSubmit() {
-  console.log('开始进行参数校验:','1');
+  // console.log('开始进行参数校验:','1');
   if (!formData.value.username) {
     message.error(messages[currentLang.value].login.emailError)
     return
   }
-  console.log('开始进行参数校验:',formData.value.username);
+  // console.log('开始进行参数校验:',formData.value.username);
   if (!formData.value.password) {
     message.error(messages[currentLang.value].login.passwordError)
     return
@@ -141,7 +141,7 @@ async function handleSubmit() {
   try {
     loading.value = true
     const deviceId = 'device-' + Math.random().toString(36).substr(2, 9)
-    console.log('判断是登录还是注册:',isRegisterMode.value);
+    // console.log('判断是登录还是注册:',isRegisterMode.value);
     if (isRegisterMode.value) {
       // 注册逻辑
       const registerParams: RegisterRequest = {
@@ -172,13 +172,13 @@ async function handleSubmit() {
       try {
         // 检查是否已有tenantId，如果没有则获取
         let tenantId = currentTenantId.value;
-        console.log('开始登录:',tenantId);
+        // console.log('开始登录:',tenantId);
         if (!tenantId) {
           try {
             tenantId = await getTenantId(formData.value.username);
-            console.log('获取到tenantId:', tenantId);
+            // console.log('获取到tenantId:', tenantId);
           } catch (error) {
-            console.error('查找用户失败:', error);
+            // console.error('查找用户失败:', error);
             message.error(messages[currentLang.value].login.userNotExists);
             return;
           }
@@ -204,7 +204,7 @@ async function handleSubmit() {
           message.error(messages[currentLang.value].login.loginFailed)
         }
       } catch (error) {
-        console.error('登录失败:', error);
+        console.error('登录失败');
         message.error(error instanceof Error ? error.message : messages[currentLang.value].login.loginFailed);
       }
     }
