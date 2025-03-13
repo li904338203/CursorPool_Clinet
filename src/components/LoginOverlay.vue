@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   NCard, 
   NForm, 
@@ -7,7 +7,8 @@ import {
   NInput, 
   NButton, 
   useMessage,
-  NSpace
+  NSpace,
+  NCheckbox
   // 注释掉未使用的组件
   // NModal
 } from 'naive-ui'
@@ -24,6 +25,9 @@ import { encrypt } from '../utils/crypto'
 
 const message = useMessage()
 const loading = ref(false)
+
+// 添加记住账号选项
+const rememberAccount = ref(false)
 
 const formData = ref({
   username: '',
@@ -113,6 +117,34 @@ const passwordInputFeedback = computed(() => {
   return ''
 })
 
+// 保存账号信息到本地存储
+const saveAccountInfo = (username: string, password: string) => {
+  if (rememberAccount.value) {
+    localStorage.setItem('rememberedAccount', username);
+    // 保存原始密码，不进行加密
+    localStorage.setItem('rememberedPassword', password);
+  } else {
+    localStorage.removeItem('rememberedAccount');
+    localStorage.removeItem('rememberedPassword');
+  }
+}
+
+// 加载保存的账号信息
+const loadSavedAccount = () => {
+  const savedAccount = localStorage.getItem('rememberedAccount');
+  const savedPassword = localStorage.getItem('rememberedPassword');
+  if (savedAccount) {
+    formData.value.username = savedAccount;
+    rememberAccount.value = true;
+    
+    // 如果有保存的密码，也加载
+    if (savedPassword) {
+      // 这里不需要解密，因为登录时会重新加密
+      formData.value.password = savedPassword;
+    }
+  }
+}
+
 // 修改处理提交的逻辑, 添加密码验证
 async function handleSubmit() {
   // console.log('开始进行参数校验:','1');
@@ -195,6 +227,9 @@ async function handleSubmit() {
         const result = await login(loginParams)
         // console.error('登录result:', result);
         if (result.accessToken) {
+          // 保存账号信息（如果选择了记住账号）
+          saveAccountInfo(formData.value.username, formData.value.password);
+          
           // 不再需要设置apiKey，因为login函数已经保存了token
           message.success(messages[currentLang.value].login.loginSuccess)
           emit('login-success')
@@ -232,6 +267,11 @@ const inputProps = {
   'data-form-type': 'other',
   'data-lpignore': 'true'
 } as CustomInputProps
+
+// 在组件挂载时加载保存的账号
+onMounted(() => {
+  loadSavedAccount();
+})
 
 // 注释掉忘记密码相关状态和函数
 /*
@@ -325,6 +365,11 @@ const handleForgotPassword = async () => {
             :disabled="loading"
           />
         </n-form-item>
+
+        <!-- 添加记住账号复选框，更紧凑的布局 -->
+        <div v-if="!isRegisterMode" class="remember-account">
+          <n-checkbox v-model:checked="rememberAccount">{{ i18n.login.rememberAccount }}</n-checkbox>
+        </div>
 
         <n-space vertical :size="12">
           <n-button 
@@ -430,6 +475,19 @@ const handleForgotPassword = async () => {
 .login-card {
   width: 400px;
   max-width: 90%;
+}
+
+/* 记住账号复选框的紧凑样式 */
+.remember-account {
+  margin-bottom: 12px;
+  margin-top: -4px;
+  padding-left: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.remember-account :deep(.n-checkbox) {
+  font-size: 0.9em;
 }
 
 :deep(.n-card) {

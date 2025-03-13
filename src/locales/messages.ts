@@ -89,6 +89,7 @@ export const messages = {
       emailInvalid: '请输入有效的账户',
       emailUnsupported: '暂不支持该账户域名',
       passwordInvalid: '密码必须包含至少8个字符, 包括大小写字母和数字',
+      rememberAccount: '记住我的账号和密码',
     },
     settings: {
       activation: '激活码兑换',
@@ -265,13 +266,14 @@ export const messages = {
       loginSuccess: 'Login successful',
       loginFailed: 'Login failed',
       noAccount: 'No account?',
-      register: 'Register Now',
+      register: 'Register now',
       hasAccount: 'Already have an account? Login',
-      userExists: 'This account is registered, switched to login mode',
-      userNotExists: 'This account is not registered, please register first',
+      userExists: 'This account is already registered',
+      userNotExists: 'This account is not registered',
       emailInvalid: 'Please enter a valid account',
       emailUnsupported: 'This account domain is not supported',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'Remember my account and password',
     },
     settings: {
       activation: 'Activation',
@@ -447,6 +449,7 @@ export const messages = {
       emailInvalid: '有効なアカウントを入力してください',
       emailUnsupported: 'このアカウントドメインは現在サポートされていません',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'アカウントとパスワードを記憶する',
     },
     settings: {
       activation: 'アクティベーション',
@@ -622,6 +625,7 @@ export const messages = {
       emailInvalid: 'Veuillez entrer un compte valide',
       emailUnsupported: 'Ce domaine de compte n\'est pas pris en charge',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'Se souvenir de mon compte et mot de passe',
     },
     settings: {
       activation: 'Activation',
@@ -786,6 +790,7 @@ export const messages = {
       emailInvalid: 'Bitte geben Sie ein gültiges Konto ein',
       emailUnsupported: 'Diese Konto-Domain wird nicht unterstützt',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'Konto und Passwort merken',
     },
     settings: {
       activation: 'Aktivierung',
@@ -950,6 +955,7 @@ export const messages = {
       emailInvalid: '유효한 계정을 입력하세요',
       emailUnsupported: '이 계정 도메인은 지원되지 않습니다',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: '계정 및 비밀번호 기억하기',
     },
     settings: {
       activation: '활성화',
@@ -1114,6 +1120,7 @@ export const messages = {
       emailInvalid: 'Введите действительную учетную запись',
       emailUnsupported: 'Этот домен учетной записи не поддерживается',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'Запомнить мой аккаунт и пароль',
     },
     settings: {
       activation: 'Активация',
@@ -1278,6 +1285,7 @@ export const messages = {
       emailInvalid: 'Ingrese una cuenta válida',
       emailUnsupported: 'Este dominio de cuenta no es compatible',
       passwordInvalid: 'Password must contain at least 8 characters, including uppercase, lowercase letters and numbers',
+      rememberAccount: 'Recordar mi cuenta y contraseña',
     },
     settings: {
       activation: 'Activación',
