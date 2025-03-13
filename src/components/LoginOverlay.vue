@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { 
   NCard, 
   NForm, 
@@ -31,9 +31,6 @@ const formData = ref({
   tenant_id: '',
 })
 
-// 检查用户是否存在的防抖定时器
-let checkUserTimer: number | null = null
-
 // 添加注册模式状态
 const isRegisterMode = ref(false)
 
@@ -59,42 +56,39 @@ function toggleMode() {
   currentTenantId.value = null;
 }
 
-// 修改监听用户名变化的逻辑
-watch(() => formData.value.username, async (newValue) => {
-  if (!newValue) {
+// 添加 blur 事件处理函数
+const handleUsernameBlur = async () => {
+  const username = formData.value.username;
+  if (!username) {
     currentTenantId.value = null;
-    return
+    return;
   }
-  
-  // 防抖处理
-  if (checkUserTimer) clearTimeout(checkUserTimer)
-  checkUserTimer = setTimeout(async () => {
-    try {
-      // 使用getTenantId替代checkUser
-      const tenantId = await getTenantId(newValue);
-      console.log('获取到tenantId:', tenantId);
-      
-      // 保存tenantId
-      currentTenantId.value = tenantId;
-      
-      // 如果是注册模式，用户存在时自动切换到登录
-      if (isRegisterMode.value) {
-        message.info(messages[currentLang.value].login.userExists);
-        isRegisterMode.value = false;
-      }
-    } catch (error) {
-      console.error('查找用户失败:', error);
-      
-      // 清除tenantId
-      currentTenantId.value = null;
-      
-      // 如果是登录模式，用户不存在时提示
-      if (!isRegisterMode.value) {
-        message.error(messages[currentLang.value].login.userNotExists);
-      }
+
+  try {
+    // 使用getTenantId替代checkUser
+    const tenantId = await getTenantId(username);
+    console.log('获取到tenantId:', tenantId);
+    
+    // 保存tenantId
+    currentTenantId.value = tenantId;
+    
+    // 如果是注册模式，用户存在时自动切换到登录
+    if (isRegisterMode.value) {
+      message.info(messages[currentLang.value].login.userExists);
+      isRegisterMode.value = false;
     }
-  }, 500)
-})
+  } catch (error) {
+    console.error('查找用户失败:', error);
+    
+    // 清除tenantId
+    currentTenantId.value = null;
+    
+    // 如果是登录模式，用户不存在时提示
+    if (!isRegisterMode.value) {
+      message.error(messages[currentLang.value].login.userNotExists);
+    }
+  }
+}
 
 // 添加密码验证正则
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
@@ -121,22 +115,23 @@ const passwordInputFeedback = computed(() => {
 
 // 修改处理提交的逻辑, 添加密码验证
 async function handleSubmit() {
+  console.log('开始进行参数校验:','1');
   if (!formData.value.username) {
     message.error(messages[currentLang.value].login.emailError)
     return
   }
-
+  console.log('开始进行参数校验:',formData.value.username);
   if (!formData.value.password) {
     message.error(messages[currentLang.value].login.passwordError)
     return
   }
-
+  console.log('开始进行参数校验:',formData.value.password);
   // 注册模式下校验密码格式
   if (isRegisterMode.value && !passwordRegex.test(formData.value.password)) {
     message.error(messages[currentLang.value].login.passwordInvalid)
     return
   }
-
+  console.log('开始进行参数校验:',formData.value.tenant_id);
   // 注册模式下校验码必填
   if (isRegisterMode.value && !formData.value.tenant_id) {
     message.error('请输入校验码')
@@ -146,7 +141,7 @@ async function handleSubmit() {
   try {
     loading.value = true
     const deviceId = 'device-' + Math.random().toString(36).substr(2, 9)
-    
+    console.log('判断是登录还是注册:',isRegisterMode.value);
     if (isRegisterMode.value) {
       // 注册逻辑
       const registerParams: RegisterRequest = {
@@ -177,6 +172,7 @@ async function handleSubmit() {
       try {
         // 检查是否已有tenantId，如果没有则获取
         let tenantId = currentTenantId.value;
+        console.log('开始登录:',tenantId);
         if (!tenantId) {
           try {
             tenantId = await getTenantId(formData.value.username);
@@ -195,8 +191,9 @@ async function handleSubmit() {
           deviceId: deviceId,
           tenantId: tenantId // 使用tenantId
         }
-
+        // console.error('开始登录:', loginParams);
         const result = await login(loginParams)
+        // console.error('登录result:', result);
         if (result.accessToken) {
           // 不再需要设置apiKey，因为login函数已经保存了token
           message.success(messages[currentLang.value].login.loginSuccess)
@@ -297,6 +294,7 @@ const handleForgotPassword = async () => {
         <n-form-item :label="i18n.login.emailPlaceholder">
           <n-input
             v-model:value="formData.username"
+            @blur="handleUsernameBlur"
             :placeholder="i18n.login.emailPlaceholder"
             :disabled="loading"
             autocomplete="off"
