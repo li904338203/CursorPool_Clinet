@@ -238,11 +238,11 @@ export const messages = {
         4: 'V4',
         5: 'V5'
       },
-      newVersionAvailable: '发现新版本',
-      currentVersion: '当前版本',
-      newVersion: '最新版本',
-      later: '稍后更新',
-      downloadNow: '立即下载',
+      newVersionAvailable: 'New Version Available',
+      currentVersion: 'Current Version',
+      newVersion: 'New Version',
+      later: 'Update Later',
+      downloadNow: 'Download Now',
       unusedCreditsWarning: 'Usage Reminder',
       unusedCreditsMessage: 'You still have {count} advanced model usage credits left. Are you sure you want to switch accounts?',
       confirmSwitch: 'Confirm',
@@ -340,9 +340,9 @@ export const messages = {
         restoreHookSuccess: 'Hook restored successfully',
         cursorRunning: 'Cursor is running, please save your work before continuing!',
         forceKillConfirm: 'I have saved, force close',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        creditTransferConfirm: 'Do you want to transfer the credit from the old plugin to this software? Once transferred, the credit cannot be restored. Do you want to proceed?',
+        confirm: 'Confirm',
+        cancel: 'Cancel'
       },
       history: {
         disableUpdate: 'Disable auto update',
@@ -431,10 +431,10 @@ export const messages = {
       ccStatus: 'CC状態',
       registerTime: '登録時間',
       email: 'ローカルCursorアカウント',
-      cpUsage: 'Cursor Agent额度剩余量',
+      cpUsage: 'Cursor Agent残りクレジット',
       advancedModelUsage: 'Advanced Model Usage',
       basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cannotGetUsage: '取得できません',
       cursorHistoryDownload: 'Cursor 履歴バージョン ダウンロード'
     },
     login: {
@@ -496,7 +496,8 @@ export const messages = {
       pleaseInputPassword: 'すべてのパスワード欄を入力してください',
       passwordNotMatch: '新しいパスワードが一致しません',
       passwordChangeSuccess: 'パスワードの変更に成功しました',
-      passwordChangeFailed: 'パスワードの変更に失敗しました'
+      passwordChangeFailed: 'パスワードの変更に失敗しました',
+      creditTransferSuccess: 'クレジット転送が成功しました'
     },
     systemControl: {
       title: 'システム制御',
@@ -508,8 +509,8 @@ export const messages = {
       updateStatus: '自動更新状態',
       updateDisabled: '無効',
       updateEnabled: '有効',
-      disableUpdate: 'Update deaktivieren',
-      restoreUpdate: 'Update wiederherstellen',
+      disableUpdate: '更新を無効化',
+      restoreUpdate: '更新を復元',
       clientStatus: 'Client-Status',
       clientVerified: '検証済み',
       clientUnverified: '未検証',
@@ -520,7 +521,7 @@ export const messages = {
         restoreHookSuccess: 'フックを復元しました',
         cursorRunning: 'Cursorが実行中です。続行する前に作業を保存してください！',
         forceKillConfirm: '保存しました、強制終了します',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
+        creditTransferConfirm: '古いプラグインのクレジットを本ソフトウェアに移行しますか？移行後は元に戻せません。続行しますか？',
         confirm: '確認',
         cancel: 'キャンセル'
       },
@@ -544,14 +545,14 @@ export const messages = {
       copySuccess: 'コピーに成功しました',
       copyFailed: 'コピーに失敗しました',
       forceClose: '保存しましたので、強制的に閉じます',
-      cursorRunning: 'Cursor が動作中',
+      cursorRunning: 'Cursor実行中',
       cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
-      closingCursor: 'Cursor を閉じています...',
-      forgotPassword: 'パスワードを忘れた場合',
+      closingCursor: 'Cursorを終了中...',
+      forgotPassword: 'パスワードをお忘れですか？',
       unknown: '不明',
-      notBound: '未绑定',
-      verified: '検証済み',
-      unverified: '未検証',
+      notBound: '未連携',
+      verified: '認証済み',
+      unverified: '未認証',
       success: '成功',
       failed: '失敗',
       loading: '読み込み中...'
@@ -611,10 +612,10 @@ export const messages = {
       ccStatus: 'État CC',
       registerTime: 'Heure d\'inscription',
       email: 'Compte Cursor local',
-      cpUsage: 'Cursor Agent额度剩余量',
-      advancedModelUsage: 'Advanced Model Usage',
-      basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cpUsage: 'Crédits restants de Cursor Agent',
+      advancedModelUsage: 'Utilisation du modèle avancé',
+      basicModelUsage: 'Utilisation du modèle basique',
+      cannotGetUsage: 'Impossible d\'obtenir',
       cursorHistoryDownload: 'Télécharger les versions historiques de Cursor'
     },
     login: {
@@ -676,7 +677,8 @@ export const messages = {
       pleaseInputPassword: 'Veuillez remplir tous les champs de mot de passe',
       passwordNotMatch: 'Les mots de passe ne correspondent pas',
       passwordChangeSuccess: 'Mot de passe modifié avec succès',
-      passwordChangeFailed: 'Échec de la modification du mot de passe'
+      passwordChangeFailed: 'Échec de la modification du mot de passe',
+      creditTransferSuccess: 'Transfert de crédit réussi'
     },
     systemControl: {
       title: 'Contrôle du système',
@@ -685,7 +687,7 @@ export const messages = {
       hookNotApplied: 'Non appliqué',
       applyHook: 'Appliquer le Hook',
       restoreHook: 'Restaurer le Hook',
-      updateStatus: 'État de la mise à jour automatique',
+      updateStatus: 'État de actualisation automatique',
       updateDisabled: 'Désactivé',
       updateEnabled: 'Activé',
       disableUpdate: 'Désactiver la mise à jour',
@@ -694,15 +696,15 @@ export const messages = {
       clientVerified: 'Vérifié',
       clientUnverified: 'Non vérifié',
       messages: {
-        disableUpdateSuccess: 'Mise à jour automatique désactivée avec succès',
-        restoreUpdateSuccess: 'Mise à jour automatique restaurée avec succès',
+        disableUpdateSuccess: 'Actualisation automatique désactivée avec succès',
+        restoreUpdateSuccess: 'Actualisation automatique restaurée avec succès',
         applyHookSuccess: 'Hook appliqué avec succès',
         restoreHookSuccess: 'Hook restauré avec succès',
         cursorRunning: 'Cursor est en cours d\'exécution, veuillez sauvegarder votre travail avant de continuer !',
-        forceKillConfirm: 'J\'ai sauvegardé, forzar cierre',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        forceKillConfirm: 'He guardado, forzar cierre',
+        creditTransferConfirm: 'Voulez-vous transférer le crédit de l\'ancien plugin vers ce logiciel ? Une fois transféré, le crédit ne peut pas être restauré. Voulez-vous continuer ?',
+        confirm: 'Confirmer',
+        cancel: 'Annuler'
       },
       history: {
         disableUpdate: 'Désactiver la mise à jour automatique',
@@ -725,9 +727,16 @@ export const messages = {
       copyFailed: 'Échec de la copie',
       forceClose: 'J\'ai sauvegardé, fermer forcément',
       cursorRunning: 'Cursor en cours d\'exécution',
-      cursorRunningMessage: 'Détecté que le Cursor est en cours d\'exécution, veuillez enregistrer le projet qui n\'a pas été modifié avant de continuer!',
-      closingCursor: 'Fermeture du Cursor...',
-      forgotPassword: 'Mot de passe oublié?'
+      cursorRunningMessage: 'Cursor est en cours d\'exécution, veuillez sauvegarder votre projet avant de continuer !',
+      closingCursor: 'Cursor schließen...',
+      forgotPassword: 'Mot de passe oublié?',
+      unknown: 'Inconnu',
+      notBound: 'Non lié',
+      verified: 'Vérifié',
+      unverified: 'Non vérifié',
+      success: 'Succès',
+      failed: 'Échec',
+      loading: 'Chargement...'
     }
   },
   'de-DE': {
@@ -780,10 +789,10 @@ export const messages = {
       ccStatus: 'CC Status',
       registerTime: 'Registrierungszeit',
       email: 'Lokales Cursor-Konto',
-      cpUsage: 'Cursor Agent额度剩余量',
-      advancedModelUsage: 'Advanced Model Usage',
-      basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cpUsage: 'Verbleibende Cursor Agent Guthaben',
+      advancedModelUsage: 'Erweiterte Modellnutzung',
+      basicModelUsage: 'Normale Modellnutzung',
+      cannotGetUsage: 'Nicht verfügbar',
       cursorHistoryDownload: 'Cursor Historische Versionen Herunterladen'
     },
     login: {
@@ -845,7 +854,8 @@ export const messages = {
       pleaseInputPassword: 'Bitte alle Passwortfelder ausfüllen',
       passwordNotMatch: 'Die Passwörter stimmen nicht überein',
       passwordChangeSuccess: 'Passwort erfolgreich geändert',
-      passwordChangeFailed: 'Passwortänderung fehlgeschlagen'
+      passwordChangeFailed: 'Passwortänderung fehlgeschlagen',
+      creditTransferSuccess: 'Guthaben übertragen erfolgreich'
     },
     systemControl: {
       title: 'Systemsteuerung',
@@ -869,9 +879,9 @@ export const messages = {
         restoreHookSuccess: 'Hook erfolgreich wiederhergestellt',
         cursorRunning: 'Cursor läuft, bitte speichern Sie Ihre Arbeit vor dem Fortfahren!',
         forceKillConfirm: 'Ich habe gespeichert, Zwangsbeenden',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        creditTransferConfirm: 'Voulez-vous transférer le crédit de l\'ancien plugin vers ce logiciel ? Une fois transféré, le crédit ne peut pas être restauré. Voulez-vous continuer ?',
+        confirm: 'Bestätigen',
+        cancel: 'Abbrechen'
       },
       history: {
         disableUpdate: 'Automatische Updates deaktivieren',
@@ -894,9 +904,16 @@ export const messages = {
       copyFailed: 'Kopie fehlgeschlagen',
       forceClose: 'Ich habe gespeichert, erzwingend schließen',
       cursorRunning: 'Cursor läuft',
-      cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
+      cursorRunningMessage: 'Cursor läuft, bitte speichern Sie Ihr Projekt bevor Sie fortfahren!',
       closingCursor: 'Cursor schließen...',
-      forgotPassword: 'Mot de passe oublié?'
+      forgotPassword: 'Mot de passe oublié?',
+      unknown: 'Unbekannt',
+      notBound: 'Nicht verbunden',
+      verified: 'Verifiziert',
+      unverified: 'Nicht verifiziert',
+      success: 'Erfolg',
+      failed: 'Fehlgeschlagen',
+      loading: 'Laden...'
     }
   },
   'ko-KR': {
@@ -949,10 +966,10 @@ export const messages = {
       ccStatus: 'CC 상태',
       registerTime: '등록 시간',
       email: '로컬 Cursor 계정',
-      cpUsage: 'Cursor Agent额度剩余量',
-      advancedModelUsage: 'Advanced Model Usage',
-      basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cpUsage: 'Cursor Agent 잔여 크레딧',
+      advancedModelUsage: '고급 모델 사용량',
+      basicModelUsage: '일반 모델 사용량',
+      cannotGetUsage: '사용량을 가져올 수 없음',
       cursorHistoryDownload: 'Cursor 이전 버전 다운로드'
     },
     login: {
@@ -1014,7 +1031,8 @@ export const messages = {
       pleaseInputPassword: '모든 비밀번호 필드를 입력해주세요',
       passwordNotMatch: '비밀번호가 일치하지 않습니다',
       passwordChangeSuccess: '비밀번호 변경 성공',
-      passwordChangeFailed: '비밀번호 변경 실패'
+      passwordChangeFailed: '비밀번호 변경 실패',
+      creditTransferSuccess: '크레딧 이전 성공'
     },
     systemControl: {
       title: '시스템 제어',
@@ -1038,9 +1056,9 @@ export const messages = {
         restoreHookSuccess: '훅이 복원되었습니다',
         cursorRunning: 'Cursor가 실행 중입니다. 계속하기 전에 작업을 저장하세요!',
         forceKillConfirm: '저장했습니다, 강제 종료',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        creditTransferConfirm: '이전 플러그인의 크레딧을 이 소프트웨어로 이전하시겠습니까? 이전된 크레딧은 복구할 수 없습니다. 계속하시겠습니까?',
+        confirm: '확인',
+        cancel: '취소'
       },
       history: {
         disableUpdate: '자동 업데이트 비활성화',
@@ -1065,7 +1083,14 @@ export const messages = {
       cursorRunning: 'Cursor 가 동작 중',
       cursorRunningMessage: '변경되지 않은 프로젝트를 저장한 후 계속하세요!',
       closingCursor: 'Cursor를 닫는 중...',
-      forgotPassword: '비밀번호를 잊으셨나요?'
+      forgotPassword: '비밀번호를 잊으셨나요?',
+      unknown: '알 수 없음',
+      notBound: '연결되지 않음',
+      verified: '인증됨',
+      unverified: '인증되지 않음',
+      success: '성공',
+      failed: '실패',
+      loading: '로딩 중...'
     }
   },
   'ru-RU': {
@@ -1118,10 +1143,10 @@ export const messages = {
       ccStatus: 'Статус CC',
       registerTime: 'Время регистрации',
       email: 'Локальная учетная запись Cursor',
-      cpUsage: 'Cursor Agent额度剩余量',
-      advancedModelUsage: 'Advanced Model Usage',
-      basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cpUsage: 'Оставшиеся кредиты Cursor Agent',
+      advancedModelUsage: 'Использование продвинутой модели',
+      basicModelUsage: 'Использование базовой модели',
+      cannotGetUsage: 'Невозможно получить',
       cursorHistoryDownload: 'Скачать исторические версии Cursor'
     },
     login: {
@@ -1183,7 +1208,8 @@ export const messages = {
       pleaseInputPassword: 'Пожалуйста, заполните все поля пароля',
       passwordNotMatch: 'Пароли не совпадают',
       passwordChangeSuccess: 'Пароль успешно изменен',
-      passwordChangeFailed: 'Изменение пароля не удалось'
+      passwordChangeFailed: 'Изменение пароля не удалось',
+      creditTransferSuccess: 'Кредит переведен успешно'
     },
     systemControl: {
       title: 'Управление системой',
@@ -1192,30 +1218,30 @@ export const messages = {
       hookNotApplied: 'Не применено',
       applyHook: 'Применить Hook',
       restoreHook: 'Восстановить Hook',
-      updateStatus: 'Статус автоматического обновления',
+      updateStatus: 'Этап обновления',
       updateDisabled: 'Отключено',
       updateEnabled: 'Включено',
       disableUpdate: 'Отключить обновление',
-      restoreUpdate: 'Restaurar обновление',
-      clientStatus: 'Эtat du client',
+      restoreUpdate: 'Restaurar actualización',
+      clientStatus: 'Состояние клиента',
       clientVerified: 'Проверено',
       clientUnverified: 'Не проверено',
       messages: {
         disableUpdateSuccess: 'Автоматическое обновление успешно отключено',
         restoreUpdateSuccess: 'Автоматическое обновление успешно восстановлено',
-        applyHookSuccess: 'Hook успешно применен',
-        restoreHookSuccess: 'Hook успешно восстановлен',
-        cursorRunning: 'Cursor запущен, пожалуйста, сохраните работу перед продолжением!',
+        applyHookSuccess: 'Hook применен успешно',
+        restoreHookSuccess: 'Hook восстановлен успешно',
+        cursorRunning: 'Cursor läuft, bitte speichern Sie Ihr Projekt bevor Sie fortfahren!',
         forceKillConfirm: 'He guardado, forzar cierre',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        creditTransferConfirm: 'Voulez-vous transférer le crédit de l\'ancien plugin vers ce logiciel ? Une fois transféré, le crédit ne peut pas être restauré. Voulez-vous continuer ?',
+        confirm: 'Bestätigen',
+        cancel: 'Abbrechen'
       },
       history: {
-        disableUpdate: 'Отключить автообновление',
-        restoreUpdate: 'Restaurar автообновление',
+        disableUpdate: 'Отключить автоматическое обновление',
+        restoreUpdate: 'Восстановить автоматическое обновление',
         applyHook: 'Применить hook',
-        restoreHook: 'Restaurar hook'
+        restoreHook: 'Восстановить hook'
       }
     },
     about: {
@@ -1232,9 +1258,16 @@ export const messages = {
       copyFailed: 'Копирование не удалось',
       forceClose: 'Я сохранил, закройте принудительно',
       cursorRunning: 'Cursor в работе',
-      cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
+      cursorRunningMessage: 'Cursor запущен, пожалуйста, сохраните проект перед продолжением!',
       closingCursor: 'Закрытие Cursor...',
-      forgotPassword: 'Mot de passe oublié?'
+      forgotPassword: 'Mot de passe oublié?',
+      unknown: 'Неизвестно',
+      notBound: 'Не привязан',
+      verified: 'Проверено',
+      unverified: 'Не проверено',
+      success: 'Успешно',
+      failed: 'Ошибка',
+      loading: 'Загрузка...'
     }
   },
   'es-AR': {
@@ -1287,10 +1320,10 @@ export const messages = {
       ccStatus: 'Estado CC',
       registerTime: 'Hora de registro',
       email: 'Cuenta local de Cursor',
-      cpUsage: 'Cursor Agent额度剩余量',
-      advancedModelUsage: 'Advanced Model Usage',
-      basicModelUsage: '普通模型使用量',
-      cannotGetUsage: '无法获取',
+      cpUsage: 'Créditos restantes de Cursor Agent',
+      advancedModelUsage: 'Uso del modelo avanzado',
+      basicModelUsage: 'Uso del modelo básico',
+      cannotGetUsage: 'No se puede obtener',
       cursorHistoryDownload: 'Descargar versiones históricas de Cursor'
     },
     login: {
@@ -1325,7 +1358,7 @@ export const messages = {
       changePassword: 'Cambiar contraseña',
       currentPassword: 'Contraseña actual',
       newPassword: 'Nueva contraseña',
-      confirmPassword: 'Confirmar contraseña',
+      confirmPassword: 'Confirmer contraseña',
       about: 'Acerca de'
     },
     history: {
@@ -1352,7 +1385,8 @@ export const messages = {
       pleaseInputPassword: 'Por favor complete todos los campos de contraseña',
       passwordNotMatch: 'Las contraseñas no coinciden',
       passwordChangeSuccess: 'Contraseña cambiada exitosamente',
-      passwordChangeFailed: 'Cambio de contraseña fallido'
+      passwordChangeFailed: 'Cambio de contraseña fallido',
+      creditTransferSuccess: 'Transferencia de crédito exitosa'
     },
     systemControl: {
       title: 'Control del sistema',
@@ -1366,19 +1400,19 @@ export const messages = {
       updateEnabled: 'Activado',
       disableUpdate: 'Desactivar actualización',
       restoreUpdate: 'Restaurar actualización',
-      clientStatus: 'État du client',
-      clientVerified: 'Vérifié',
-      clientUnverified: 'Non vérifié',
+      clientStatus: 'Estado del cliente',
+      clientVerified: 'Verificado',
+      clientUnverified: 'No verificado',
       messages: {
         disableUpdateSuccess: 'Actualización automática desactivada con éxito',
         restoreUpdateSuccess: 'Actualización automática restaurada con éxito',
         applyHookSuccess: 'Hook aplicado con éxito',
         restoreHookSuccess: 'Hook restaurado con éxito',
-        cursorRunning: 'Cursor en ejecución, por favor guarde su trabajo antes de continuar!',
+        cursorRunning: 'Cursor está en ejecución, ¡por favor guarde su proyecto antes de continuar!',
         forceKillConfirm: 'He guardado, forzar cierre',
-        creditTransferConfirm: '是否把老插件的额度迁移到本软件中，额度一旦迁移无法恢复，是否操作？',
-        confirm: '确认',
-        cancel: '取消'
+        creditTransferConfirm: '¿Desea transferir el crédito del plugin anterior a este software? Una vez transferido, el crédito no se puede restaurar. ¿Desea continuar?',
+        confirm: 'Confirmar',
+        cancel: 'Cancelar'
       },
       history: {
         disableUpdate: 'Desactivar actualización automática',
@@ -1401,9 +1435,16 @@ export const messages = {
       copyFailed: 'Copia fallida',
       forceClose: 'Guardar y cerrar forzadamente',
       cursorRunning: 'Cursor en ejecución',
-      cursorRunningMessage: 'Detected Cursor is running, please save the project that has not been changed before continuing!',
+      cursorRunningMessage: 'Cursor está en ejecución, ¡por favor guarde su proyecto antes de continuar!',
       closingCursor: 'Cerrando Cursor...',
-      forgotPassword: 'Mot de passe oublié?'
+      forgotPassword: '¿Olvidó su contraseña?',
+      unknown: 'Desconocido',
+      notBound: 'No vinculado',
+      verified: 'Verificado',
+      unverified: 'No verificado',
+      success: 'Éxito',
+      failed: 'Error',
+      loading: 'Cargando...'
     }
   }
 } as const
