@@ -4,6 +4,7 @@
   import type { DriveStep, Side } from 'driver.js'
   import 'driver.js/dist/driver.css'
   import { useAppStore } from '@/stores'
+  import Logger from '@/utils/logger'
 
   // 引入appStore
   const appStore = useAppStore()
@@ -238,7 +239,7 @@
           // 设置引导状态为已完成
           await appStore.completeTour()
         } catch (error) {
-          console.error('保存引导状态失败:', error)
+          Logger.error(`保存引导状态失败: ${error}`)
         }
 
         if (props.onComplete) {

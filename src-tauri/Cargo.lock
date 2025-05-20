@@ -837,7 +837,7 @@ dependencies = [
 
 [[package]]
 name = "cursor-pool"
-version = "1.8.5"
+version = "1.8.9"
 dependencies = [
  "cargo-husky",
  "chrono",

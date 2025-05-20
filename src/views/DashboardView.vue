@@ -29,6 +29,7 @@
     checkFullDiskAccessPermission,
     requestFullDiskAccessPermission,
   } from 'tauri-plugin-macos-permissions-api'
+  import Logger from '@/utils/logger'
 
   interface DeviceInfoState {
     machineCode: string
@@ -256,7 +257,7 @@
 
       await executeAccountSwitch()
     } catch (error) {
-      console.error('账户切换失败:', error)
+      Logger.error(`账户切换失败: ${error}`)
       message.error('操作失败: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
       accountSwitchLoading.value = false
@@ -290,7 +291,7 @@
 
       await executeQuickChange()
     } catch (error) {
-      console.error('一键切换失败:', error)
+      Logger.error(`一键切换失败: ${error}`)
       message.error('操作失败: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
       quickChangeLoading.value = false
@@ -312,7 +313,7 @@
       }
       return false
     } catch (error) {
-      console.error('账户切换失败:', error)
+      Logger.error(`账户切换失败: ${error}`)
       message.error(
         error instanceof Error ? error.message : i18n.value.dashboard.accountChangeFailed,
       )
@@ -388,7 +389,7 @@
             operationMessage = i18n.value.dashboard.accountChangeSuccess
           }
         } catch (error) {
-          console.error('强制切换账户失败:', error)
+          Logger.error(`强制切换账户失败: ${error}`)
           message.destroyAll()
           message.error(error instanceof Error ? error.message : String(error))
           return
@@ -402,7 +403,7 @@
             operationMessage = i18n.value.dashboard.changeSuccess
           }
         } catch (error) {
-          console.error('强制一键切换失败:', error)
+          Logger.error(`强制一键切换失败: ${error}`)
           message.destroyAll()
           message.error(error instanceof Error ? error.message : String(error))
           return
@@ -463,7 +464,7 @@
         showAdminPrivilegeModal.value = true
       }
     } catch (error) {
-      console.error('检查管理员权限失败:', error)
+      Logger.error(`检查管理员权限失败: ${error}`)
       message.error('检查管理员权限失败')
     }
   }
@@ -497,7 +498,7 @@
           showAdminPrivilegeModal.value = true
         }
       } catch (error) {
-        console.error('检查macOS权限失败:', error)
+        Logger.error(`检查macOS权限失败: ${error}`)
       }
     }
   }
@@ -523,7 +524,7 @@
       // 开始检查循环
       checkLoop()
     } catch (error) {
-      console.error('请求完全磁盘访问权限失败:', error)
+      Logger.error(`请求完全磁盘访问权限失败: ${error}`)
       message.error('请求权限失败')
     }
   }
@@ -559,19 +560,19 @@
         try {
           await cursorStore.fetchMachineIds()
         } catch (error) {
-          console.warn('获取机器码信息失败，但继续执行:', error)
+          Logger.warn(`获取机器码信息失败，但继续执行: ${error}`)
         }
 
         try {
           await cursorStore.fetchCursorUsage()
         } catch (error) {
-          console.warn('获取Cursor使用量失败，但继续执行:', error)
+          Logger.warn(`获取Cursor使用量失败，但继续执行: ${error}`)
         }
 
         try {
           await cursorStore.checkHook()
         } catch (error) {
-          console.warn('检查Hook状态失败，但继续执行:', error)
+          Logger.warn(`检查Hook状态失败，但继续执行: ${error}`)
         }
 
         // 更新视图状态
@@ -591,25 +592,20 @@
 
             // 只有当用户已登录且引导状态不为true时才显示引导
             if (isLoggedIn && appStore.shouldShowTour) {
-              console.log('开始显示引导', {
-                tourAccepted: appStore.tourAccepted,
-                isLoggedIn,
-                shouldShowTour: appStore.shouldShowTour,
-              })
               setTimeout(() => {
                 startTour()
               }, 500)
             }
           }
         } catch (error) {
-          console.error('获取引导状态失败:', error)
+          Logger.error(`获取引导状态失败: ${error}`)
         }
       } else {
         // 更新视图状态
         updateLocalViewState()
       }
     } catch (error) {
-      console.error('Dashboard初始化错误:', error)
+      Logger.error(`Dashboard初始化错误: ${error}`)
       message.error('初始化失败，请刷新页面重试')
     } finally {
       loading.value = false
@@ -623,7 +619,7 @@
         await cursorStore.refreshAllCursorData()
         updateLocalViewState()
       } catch (error) {
-        console.error('刷新数据失败:', error)
+        Logger.error(`刷新数据失败: ${error}`)
         message.error('刷新数据失败')
       } finally {
         loading.value = false
@@ -726,7 +722,7 @@
 
       await handleMachineCodeChange(false)
     } catch (error) {
-      console.error('机器码更换失败:', error)
+      Logger.error(`机器码更换失败: ${error}`)
       message.error('操作失败: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
       machineCodeLoading.value = false

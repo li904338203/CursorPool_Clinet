@@ -27,6 +27,7 @@
   import FileSelectModal from '../components/FileSelectModal.vue'
   import { useRouter } from 'vue-router'
   import { useAppStore } from '../stores/app'
+  import Logger from '@/utils/logger'
 
   const message = useMessage()
   const { t } = useI18n()
@@ -244,7 +245,7 @@
       await checkControlStatus()
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error)
-      console.error('控制操作错误:', errorMsg)
+      Logger.error(`控制操作错误: ${errorMsg}`)
       message.error(errorMsg)
     } finally {
       loadingRef.value = false
@@ -269,7 +270,7 @@
       await nextTick()
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error)
-      console.error('检查控制状态失败:', errorMsg)
+      Logger.error(`检查控制状态失败: ${errorMsg}`)
     } finally {
       // 完成检查，移除loading状态
       controlStatus.value.isChecking = false
@@ -283,7 +284,7 @@
       const path = await getUserData('system.cursor.path.mainJs')
       cursorPath.value = path
     } catch (error) {
-      console.error('获取Cursor路径失败:', error)
+      Logger.error(`获取Cursor路径失败: ${error}`)
       cursorPath.value = null
     }
   }
@@ -304,7 +305,7 @@
         // 使用强制关闭参数调用操作
         await handleControlAction(pendingControlAction.value, true)
       } catch (error) {
-        console.error('强制关闭操作失败:', error)
+        Logger.error(`强制关闭操作失败: ${error}`)
         message.error(t('systemControl.messages.forceFailed'))
       }
     }
@@ -610,19 +611,19 @@
           <n-button
             text
             tag="a"
+            href="https://github.com/Cloxl"
+            target="_blank"
+            >Cloxl</n-button
+          >
+          &
+          <n-button
+            text
+            tag="a"
             href="https://github.com/Sanyela"
             target="_blank"
           >
             Sanyela
           </n-button>
-          &
-          <n-button
-            text
-            tag="a"
-            href="https://github.com/Cloxl"
-            target="_blank"
-            >Cloxl</n-button
-          >
         </p>
         <p>{{ t('about.license') }}</p>
       </n-space>

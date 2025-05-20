@@ -3,6 +3,7 @@
   import { NSelect, useMessage } from 'naive-ui'
   import { getUserData, setUserData, delUserData } from '@/api'
   import { useI18n } from '../locales'
+  import Logger from '@/utils/logger'
 
   const message = useMessage()
   const { t } = useI18n()
@@ -48,7 +49,7 @@
         selectedCloseType.value = savedCloseType
       }
     } catch (error) {
-      console.error('获取关闭类型设置失败:', error)
+      Logger.error(`获取关闭类型设置失败: ${error}`)
     }
   })
 
@@ -66,7 +67,7 @@
         await setUserData('system.close.type', value)
       }
     } catch (error) {
-      console.error('保存关闭类型设置失败:', error)
+      Logger.error(`保存关闭类型设置失败: ${error}`)
       message.error(t('settings.settingsFailed'))
     }
   }

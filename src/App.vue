@@ -11,6 +11,7 @@
   import { Window } from '@tauri-apps/api/window'
   import { initializeDevToolsProtection } from './utils/devtools'
   import { initEventListeners, destroyEventListeners } from './utils/eventBus'
+  import { apiClient } from './utils/apiClient'
 
   const { currentTheme } = useTheme()
   const { currentLang } = useI18n()
@@ -26,6 +27,13 @@
   onMounted(async () => {
     // 初始化语言设置
     await initLanguage()
+
+    // 初始化API客户端配置
+    apiClient.configure({
+      maxRetries: 2,
+      refreshInboundOnMaxRetries: true,
+      showRetryNotification: true,
+    })
 
     // 使用统一的初始化方法
     await historyStore.init()
@@ -52,8 +60,11 @@
 
   // 应用卸载时清理
   onUnmounted(() => {
-    // 销毁所有事件监听器
+    // 清理事件监听器
     destroyEventListeners()
+
+    // 清理API客户端资源
+    apiClient.cleanup()
   })
 </script>
 

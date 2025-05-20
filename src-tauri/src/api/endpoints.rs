@@ -410,7 +410,7 @@ pub async fn report_bug(
     };
 
     let response = client
-        .post(format!("{}/bug/report", client.get_base_url()))
+        .post(format!("{}/report", client.get_base_url()))
         .json(&request)
         .send()
         .await

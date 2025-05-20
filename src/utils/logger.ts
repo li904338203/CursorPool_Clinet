@@ -54,7 +54,7 @@ class Logger {
         })
       }
     } catch (e) {
-      console.error('Failed to log error:', e)
+      Logger.error(`Failed to log error: ${e}`)
     }
   }
 
@@ -66,7 +66,7 @@ class Logger {
         line: options?.line,
       })
     } catch (e) {
-      console.error('Failed to log warning:', e)
+      Logger.error(`Failed to log warning: ${e}`)
     }
   }
 
@@ -76,7 +76,7 @@ class Logger {
         message,
       })
     } catch (e) {
-      console.error('Failed to log info:', e)
+      Logger.error(`Failed to log info: ${e}`)
     }
   }
 

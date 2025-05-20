@@ -73,6 +73,14 @@ export interface LoginResponse {
   userInfo?: UserInfo
 }
 
+// 检查用户响应
+export interface CheckUserResponse {
+  status: number
+  msg: string
+  isLoggedIn: boolean
+  userInfo?: UserInfo
+}
+
 // 检查用户请求
 export interface CheckUserRequest {
   email: string

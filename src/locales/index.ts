@@ -20,6 +20,7 @@ import {
 } from 'naive-ui'
 import { messages } from './messages'
 import { getUserData, setUserData } from '@/api'
+import Logger from '@/utils/logger'
 
 export type Language = 'zh-CN' | 'en-US' | 'ja-JP' | 'fr-FR' | 'de-DE' | 'ko-KR' | 'ru-RU' | 'es-AR'
 
@@ -89,7 +90,7 @@ export async function initLanguage() {
       await setUserData('user.info.lang', 'zh-CN')
     }
   } catch (error) {
-    console.error('初始化语言设置失败:', error)
+    Logger.error(`初始化语言设置失败: ${error}`)
   }
 }
 
@@ -102,7 +103,7 @@ export function useI18n() {
     try {
       await setUserData('user.info.lang', lang)
     } catch (err) {
-      console.error('同步语言设置失败:', err)
+      Logger.error(`同步语言设置失败: ${err}`)
     }
   }
 

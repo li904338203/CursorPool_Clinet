@@ -4,6 +4,7 @@ import {
   removeHistoryAccount as apiRemoveHistoryAccount,
 } from '@/api'
 import type { HistoryAccountRecord } from '@/api/types'
+import Logger from './logger'
 
 const STORAGE_KEY = 'history_accounts'
 
@@ -45,7 +46,7 @@ export async function getHistoryAccounts(): Promise<HistoryAccount[]> {
     const accounts = await apiGetHistoryAccounts()
     return accounts.map(convertToFrontendAccount)
   } catch (error) {
-    console.error('从后端获取历史账户失败，回退到本地存储:', error)
+    Logger.error(`从后端获取历史账户失败，回退到本地存储: ${error}`)
 
     // 如果后端获取失败，回退到本地存储
     return getHistoryAccountsFromLocal()
@@ -68,7 +69,7 @@ export async function removeHistoryAccount(email: string) {
     // 从后端删除
     await apiRemoveHistoryAccount(email)
   } catch (error) {
-    console.error('从后端删除历史账户失败，回退到本地存储:', error)
+    Logger.error(`从后端删除历史账户失败，回退到本地存储: ${error}`)
 
     // 如果后端删除失败，回退到本地存储
     const history = getHistoryAccountsFromLocal()
@@ -96,13 +97,11 @@ export async function syncLocalAccountsToBackend() {
       return
     }
 
-    console.log(`本地发现${accounts.length}个历史账户，新版本由后端自动管理，不再需要前端同步`)
-
     // 不再需要主动同步到后端，历史记录会在账户切换时由后端自动保存
     // 清除本地存储，避免冗余
     localStorage.removeItem(STORAGE_KEY)
   } catch (error) {
-    console.error('处理本地历史账户失败:', error)
+    Logger.error(`处理本地历史账户失败: ${error}`)
     localStorage.removeItem(STORAGE_KEY)
   }
 }

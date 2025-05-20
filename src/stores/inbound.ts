@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getUserData, setUserData } from '../api'
+import Logger from '@/utils/logger'
 
 export interface InboundItem {
   name: string
@@ -32,7 +33,7 @@ export const useInboundStore = defineStore('inbound', () => {
         const config = JSON.parse(configData) as InboundConfig
         inboundList.value = config.inbound
       } else {
-        console.warn('未获取到线路配置')
+        Logger.warn('未获取到线路配置')
         inboundList.value = []
       }
 
@@ -45,7 +46,7 @@ export const useInboundStore = defineStore('inbound', () => {
         }
       }
     } catch (error) {
-      console.error('获取线路配置失败:', error)
+      Logger.error(`获取线路配置失败: ${error}`)
       inboundList.value = []
     } finally {
       isLoading.value = false
@@ -55,7 +56,7 @@ export const useInboundStore = defineStore('inbound', () => {
   // 切换线路
   async function switchInbound(index: number) {
     if (index < 0 || index >= inboundList.value.length) {
-      console.error('无效的线路索引:', index)
+      Logger.error(`无效的线路索引: ${index}`)
       return false
     }
 
@@ -65,7 +66,7 @@ export const useInboundStore = defineStore('inbound', () => {
       currentInboundIndex.value = index
       return true
     } catch (error) {
-      console.error('切换线路失败:', error)
+      Logger.error(`切换线路失败: ${error}`)
       return false
     }
   }

@@ -14,6 +14,7 @@
   import ThemeToggle from '../components/ThemeToggle.vue'
   import LoginOverlay from '../components/LoginOverlay.vue'
   import CloseConfirmModal from '../components/CloseConfirmModal.vue'
+  import NetworkStatusIndicator from '../components/NetworkStatusIndicator.vue'
   import { Component, h } from 'vue'
   import { useI18n } from '../locales'
   import { messages } from '../locales/messages'
@@ -253,6 +254,15 @@
 
   <!-- 添加CloseConfirmModal组件 -->
   <close-confirm-modal />
+
+  <!-- 网络状态指示器 -->
+  <NetworkStatusIndicator />
+
+  <!-- 在未登录时显示登录层 -->
+  <LoginOverlay v-if="showLoginOverlay" />
+
+  <!-- 关闭确认对话框 -->
+  <CloseConfirmModal :visible="appCloseStore.showConfirmModal" />
 </template>
 
 <style scoped>

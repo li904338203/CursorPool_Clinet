@@ -3,6 +3,7 @@
   import MarkdownIt from 'markdown-it'
   import 'highlight.js/styles/github.css'
   import hljs from 'highlight.js'
+  import Logger from '@/utils/logger'
 
   const props = defineProps<{
     content: string
@@ -21,7 +22,7 @@
             language: lang,
           }).value
         } catch (e) {
-          console.error(e)
+          Logger.error(`高亮代码失败: ${e}`)
         }
       }
       return ''

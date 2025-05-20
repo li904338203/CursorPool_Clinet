@@ -9,6 +9,7 @@ import {
   syncLocalAccountsToBackend,
 } from '../utils/historyAccounts'
 import { getUsage, getMachineIds } from '@/api'
+import Logger from '@/utils/logger'
 
 export const useHistoryStore = defineStore('history', () => {
   // 状态
@@ -75,7 +76,7 @@ export const useHistoryStore = defineStore('history', () => {
 
       initialized.value = true
     } catch (error) {
-      console.error('初始化历史记录失败:', error)
+      Logger.error(`初始化历史记录失败: ${error}`)
     } finally {
       isLoading.value = false
     }
@@ -96,7 +97,7 @@ export const useHistoryStore = defineStore('history', () => {
       records.value = await getHistoryList()
     } catch (err) {
       error.value = err instanceof Error ? err.message : '加载历史记录失败'
-      console.error('加载历史记录失败:', err)
+      Logger.error(`加载历史记录失败: ${err}`)
     } finally {
       isLoading.value = false
     }
@@ -139,12 +140,12 @@ export const useHistoryStore = defineStore('history', () => {
       try {
         await refreshAccountsUsage()
       } catch (error) {
-        console.error('自动刷新账户使用情况失败:', error)
+        Logger.error(`自动刷新账户使用情况失败: ${error}`)
       }
 
       return accounts.value
     } catch (error) {
-      console.error('获取历史账户失败:', error)
+      Logger.error(`获取历史账户失败: ${error}`)
       throw error
     } finally {
       loadingAccounts.value = false
@@ -182,7 +183,7 @@ export const useHistoryStore = defineStore('history', () => {
 
           return true
         } catch (error) {
-          console.error(`获取账户 ${account.email} 使用情况失败:`, error)
+          Logger.error(`获取账户 ${account.email} 使用情况失败: ${error}`)
           return false
         }
       })
@@ -198,7 +199,7 @@ export const useHistoryStore = defineStore('history', () => {
         success: results.filter(Boolean).length,
       }
     } catch (error) {
-      console.error('刷新账户使用情况失败:', error)
+      Logger.error(`刷新账户使用情况失败: ${error}`)
       throw error
     } finally {
       loadingAccounts.value = false
@@ -215,7 +216,7 @@ export const useHistoryStore = defineStore('history', () => {
       accounts.value = accounts.value.filter((a) => a.email !== email)
       return true
     } catch (error) {
-      console.error('删除历史账户失败:', error)
+      Logger.error(`删除历史账户失败: ${error}`)
       throw error
     } finally {
       deletingAccount.value[email] = false
@@ -251,7 +252,7 @@ export const useHistoryStore = defineStore('history', () => {
         success: accountsToDelete,
       }
     } catch (error) {
-      console.error('清理高使用量账户失败:', error)
+      Logger.error(`清理高使用量账户失败: ${error}`)
       throw error
     } finally {
       clearingHighUsage.value = false
@@ -276,7 +277,7 @@ export const useHistoryStore = defineStore('history', () => {
       }
       return false
     } catch (error) {
-      console.error('获取当前账户信息失败:', error)
+      Logger.error(`获取当前账户信息失败: ${error}`)
       return false
     }
   }

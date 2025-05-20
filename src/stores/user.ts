@@ -11,6 +11,7 @@ import {
   checkAdminPrivileges,
 } from '@/api'
 import type { UserInfo } from '@/api/types'
+import Logger from '@/utils/logger'
 
 export const useUserStore = defineStore('user', () => {
   // 状态
@@ -51,7 +52,7 @@ export const useUserStore = defineStore('user', () => {
 
       return isAdmin.value
     } catch (error) {
-      console.error('检查管理员权限失败:', error)
+      Logger.error(`检查管理员权限失败: ${error}`)
       isAdmin.value = null
       throw error
     } finally {
@@ -71,7 +72,7 @@ export const useUserStore = defineStore('user', () => {
       isLoggedIn.value = true
       loginError.value = ''
     } catch (error) {
-      console.error('Failed to check login status:', error)
+      Logger.error(`检查登录状态失败: ${error}`)
       userInfo.value = null
       isLoggedIn.value = false
     } finally {
@@ -138,7 +139,7 @@ export const useUserStore = defineStore('user', () => {
 
       return true
     } catch (error) {
-      console.error('Logout failed:', error)
+      Logger.error(`登出失败: ${error}`)
       throw error
     }
   }
@@ -162,7 +163,7 @@ export const useUserStore = defineStore('user', () => {
       return true
     } catch (error) {
       activationError.value = error instanceof Error ? error.message : '激活失败'
-      console.error('Activation failed:', error)
+      Logger.error(`激活失败: ${error}`)
       throw error
     } finally {
       activationLoading.value = false
@@ -179,7 +180,7 @@ export const useUserStore = defineStore('user', () => {
       await logout()
       return true
     } catch (error) {
-      console.error('Change password failed:', error)
+      Logger.error(`修改密码失败: ${error}`)
       throw error
     }
   }
@@ -192,7 +193,7 @@ export const useUserStore = defineStore('user', () => {
       await apiResetPassword(email, code, password)
       return true
     } catch (error) {
-      console.error('Reset password failed:', error)
+      Logger.error(`重置密码失败: ${error}`)
       throw error
     }
   }
