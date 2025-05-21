@@ -1017,7 +1017,6 @@ pub async fn cleanup_database_entries(
 ) -> Result<(), String> {
     error!(target: "database_cleanup", "开始清理数据库条目");
 
-    // 从 db_state 创建 AppPaths 实例
     let app_paths = match AppPaths::new_with_db(Some(&db_state)) {
         Ok(p) => p,
         Err(e) => {
@@ -1062,7 +1061,42 @@ pub async fn cleanup_database_entries(
             Err(e) => {
                 let err_msg = format!("删除键 {} 失败: {}", key, e);
                 error!(target: "database_cleanup", "{}", err_msg);
-                //可以选择在这里返回错误，或者继续尝试删除其他键
+            }
+        }
+    }
+
+    let patterns = vec![
+        "cursor%/machineId", 
+        "cursor%/deviceId", 
+        "cursor%/macAddress",
+        "cursor%/history%", 
+        "cursor%/cache%"
+    ];
+    
+    for pattern in patterns {
+        match conn.execute(
+            "DELETE FROM ItemTable WHERE key GLOB ?1 AND key NOT GLOB 'cursorAuth/*'", 
+            [pattern],
+        ) {
+            Ok(rows_affected) => {
+                if rows_affected > 0 {
+                    error!(
+                        target: "database_cleanup", 
+                        "已删除{}个匹配'{}'的条目", 
+                        rows_affected, 
+                        pattern
+                    );
+                } else {
+                    error!(
+                        target: "database_cleanup", 
+                        "没有找到匹配'{}'的条目", 
+                        pattern
+                    );
+                }
+            }
+            Err(e) => {
+                let err_msg = format!("删除模式 {} 的条目失败: {}", pattern, e);
+                error!(target: "database_cleanup", "{}", err_msg);
             }
         }
     }
@@ -1079,7 +1113,7 @@ pub async fn cleanup_database_entries(
         Err(e) => {
             let err_msg = format!("设置键 {} 失败: {}", key_to_upsert, e);
             error!(target: "database_cleanup", "{}", err_msg);
-            return Err(err_msg); // 如果这个关键操作失败，则返回错误
+            return Err(err_msg);
         }
     }
 
