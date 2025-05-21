@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { getUserData, setUserData, delUserData } from '@/api'
 import { Window } from '@tauri-apps/api/window'
 import { exit } from '@tauri-apps/plugin-process'
+import Logger from '@/utils/logger'
 
 export const useAppCloseStore = defineStore('app-close', () => {
   // 状态
@@ -23,7 +24,7 @@ export const useAppCloseStore = defineStore('app-close', () => {
         closeType.value = savedCloseType as 'minimize' | 'exit'
       }
     } catch (error) {
-      console.error('获取关闭类型设置失败:', error)
+      Logger.error(`获取关闭类型设置失败: ${error}`)
     }
   }
 
@@ -46,7 +47,7 @@ export const useAppCloseStore = defineStore('app-close', () => {
         showConfirmModal.value = true
       }
     } catch (error) {
-      console.error('检查关闭类型设置失败:', error)
+      Logger.error(`检查关闭类型设置失败: ${error}`)
       // 如果获取设置失败，显示确认模态窗
       showConfirmModal.value = true
     }
@@ -72,7 +73,7 @@ export const useAppCloseStore = defineStore('app-close', () => {
       // 关闭模态窗
       showConfirmModal.value = false
     } catch (error) {
-      console.error('处理关闭操作错误:', error)
+      Logger.error(`处理关闭操作错误: ${error}`)
       throw error
     }
   }
@@ -84,32 +85,30 @@ export const useAppCloseStore = defineStore('app-close', () => {
     try {
       if (type === null) {
         // 如果类型为null，则清除设置
-        console.log('正在删除关闭类型设置...')
         await delUserData('system.close.type')
         // 验证删除是否成功
         const checkValue = await getUserData('system.close.type')
         if (checkValue === null) {
-          console.log('删除关闭类型设置成功')
+          Logger.info('删除关闭类型设置成功')
         } else {
-          console.warn('删除关闭类型设置后验证失败，仍存在值:', checkValue)
+          Logger.warn(`删除关闭类型设置后验证失败，仍存在值: ${checkValue}`)
         }
         closeType.value = 'exit' // 恢复默认值
       } else {
         // 保存设置
-        console.log(`正在保存关闭类型设置: ${type}`)
         await setUserData('system.close.type', type)
         // 验证保存是否成功
         const checkValue = await getUserData('system.close.type')
         if (checkValue === type) {
-          console.log(`保存关闭类型设置成功: ${checkValue}`)
+          Logger.info(`保存关闭类型设置成功: ${type}`)
         } else {
-          console.warn(`保存关闭类型设置后验证失败，预期:${type}, 实际:${checkValue}`)
+          Logger.warn(`保存关闭类型设置后验证失败，预期:${type}, 实际:${checkValue}`)
         }
         closeType.value = type
       }
       return true
     } catch (error) {
-      console.error('保存关闭类型设置失败:', error)
+      Logger.error(`保存关闭类型设置失败: ${error}`)
       return false
     }
   }

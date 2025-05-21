@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getArticleList, isArticleRead, markArticleRead } from '../api'
 import type { Article } from '../api/types'
+import Logger from '@/utils/logger'
 
 export const useArticleStore = defineStore('article', () => {
   // 状态
@@ -29,7 +30,7 @@ export const useArticleStore = defineStore('article', () => {
       // 检查每篇文章的已读状态
       await updateReadStatus()
     } catch (error) {
-      console.error('Error fetching articles:', error)
+      Logger.error(`Error fetching articles: ${error}`)
     } finally {
       loading.value = false
     }
@@ -49,7 +50,7 @@ export const useArticleStore = defineStore('article', () => {
         }
       }
     } catch (error) {
-      console.error('更新已读状态出错:', error)
+      Logger.error(`更新已读状态出错: ${error}`)
     }
   }
 

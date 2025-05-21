@@ -9,6 +9,7 @@
   import { useCursorStore } from '@/stores/cursor'
   import CursorRunningModal from '../components/CursorRunningModal.vue'
   import { useI18n } from '../locales'
+  import Logger from '@/utils/logger'
 
   const message = useMessage()
   const historyStore = useHistoryStore()
@@ -128,7 +129,7 @@
       }
     } catch (error) {
       message.error(t('historyAccount.switchFailed'))
-      console.error('切换账户失败:', error)
+      Logger.error(`切换账户失败: ${error}`)
     }
   }
 
@@ -138,7 +139,7 @@
       message.success(t('historyAccount.deleteSuccess'))
     } catch (error) {
       message.error(t('historyAccount.deleteFailed'))
-      console.error('删除账户失败:', error)
+      Logger.error(`删除账户失败: ${error}`)
     }
   }
 
@@ -153,7 +154,7 @@
       message.success(t('historyAccount.clearHighUsageSuccess', { count: result.success }))
     } catch (error) {
       message.error(t('historyAccount.clearHighUsageFailed'))
-      console.error('清理高使用量账户失败:', error)
+      Logger.error(`清理高使用量账户失败: ${error}`)
     }
   }
 
@@ -173,7 +174,7 @@
       }
     } catch (error) {
       message.error(t('historyAccount.refreshFailed'))
-      console.error('刷新使用情况失败:', error)
+      Logger.error(`刷新使用情况失败: ${error}`)
     }
   }
 
@@ -198,7 +199,7 @@
       }
     } catch (error) {
       message.error(t('historyAccount.switchFailed'))
-      console.error('切换账户失败:', error)
+      Logger.error(`切换账户失败: ${error}`)
     } finally {
       pendingAccount.value = null
     }
@@ -208,7 +209,7 @@
     try {
       await historyStore.fetchHistoryAccounts(false)
     } catch (error) {
-      console.error('加载历史账户失败:', error)
+      Logger.error(`加载历史账户失败: ${error}`)
       message.error(t('historyAccount.loadFailed'))
     }
 

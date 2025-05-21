@@ -12,6 +12,7 @@ import { darkTheme } from 'naive-ui'
 import { version as packageVersion } from '../../package.json'
 import { platform } from '@tauri-apps/plugin-os'
 import disclaimerMd from '../disclaimer.md?raw'
+import Logger from '@/utils/logger'
 
 // 支持的语言
 type SupportedLanguage = 'zh-CN' | 'en-US'
@@ -84,7 +85,7 @@ export const useAppStore = defineStore('app', () => {
       publicInfo.value = info
       return info
     } catch (error) {
-      console.error('获取公共信息失败:', error)
+      Logger.error(`获取公共信息失败: ${error}`)
       throw error
     } finally {
       isLoading.value = false
@@ -116,7 +117,7 @@ export const useAppStore = defineStore('app', () => {
       // 处理不同类型的响应
       if (response === null) {
         // 如果状态为null，设置为false
-        console.log('引导状态为null，设置为false')
+
         await setTourStatus('false')
         tourAccepted.value = 'false'
       } else if (typeof response === 'object' && response !== null) {
@@ -126,26 +127,24 @@ export const useAppStore = defineStore('app', () => {
           const responseObj = response as any
 
           if (responseObj.data && responseObj.data.value === null) {
-            console.log('引导状态响应对象中data.value为null，设置为false')
             await setTourStatus('false')
             tourAccepted.value = 'false'
           }
         } catch (err) {
-          console.error('处理引导状态响应对象失败:', err)
+          Logger.error(`处理引导状态响应对象失败: ${err}`)
           tourAccepted.value = 'false'
         }
       } else if (typeof response === 'string') {
         tourAccepted.value = response
       } else {
         // 处理其他情况
-        console.log('引导状态未知类型，默认设置为false')
         await setTourStatus('false')
         tourAccepted.value = 'false'
       }
 
       return tourAccepted.value
     } catch (error) {
-      console.error('获取引导状态失败:', error)
+      Logger.error(`获取引导状态失败: ${error}`)
       return null
     } finally {
       tourLoading.value = false
@@ -162,7 +161,7 @@ export const useAppStore = defineStore('app', () => {
       tourAccepted.value = status
       return true
     } catch (error) {
-      console.error('设置引导状态失败:', error)
+      Logger.error(`设置引导状态失败: ${error}`)
       return false
     } finally {
       tourLoading.value = false
@@ -202,12 +201,12 @@ export const useAppStore = defineStore('app', () => {
       const version = packageVersion
       setAppVersion(version)
     } catch (error) {
-      console.error('加载应用版本失败:', error)
+      Logger.error(`加载应用版本失败: ${error}`)
     }
 
     // 初始化引导状态
     fetchTourStatus().catch((error) => {
-      console.error('初始化引导状态失败:', error)
+      Logger.error(`初始化引导状态失败: ${error}`)
     })
   }
 
@@ -238,7 +237,7 @@ export const useAppStore = defineStore('app', () => {
 
       return disclaimerContent.value
     } catch (error) {
-      console.error('获取免责声明失败:', error)
+      Logger.error(`获取免责声明失败: ${error}`)
       throw error
     } finally {
       disclaimerLoading.value = false
@@ -262,7 +261,7 @@ export const useAppStore = defineStore('app', () => {
 
       return true
     } catch (error) {
-      console.error('保存免责声明状态失败:', error)
+      Logger.error(`保存免责声明状态失败: ${error}`)
       return false
     }
   }
@@ -273,7 +272,7 @@ export const useAppStore = defineStore('app', () => {
       const value = await getUserData('system.button.hide')
       showAllButtons.value = value === 'true'
     } catch (error) {
-      console.error('获取按钮显示状态失败:', error)
+      Logger.error(`获取按钮显示状态失败: ${error}`)
       showAllButtons.value = false
     }
   }
@@ -284,7 +283,7 @@ export const useAppStore = defineStore('app', () => {
       await setUserData('system.button.hide', show.toString())
       showAllButtons.value = show
     } catch (error) {
-      console.error('设置按钮显示状态失败:', error)
+      Logger.error(`设置按钮显示状态失败: ${error}`)
     }
   }
 

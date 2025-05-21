@@ -247,6 +247,13 @@ export const messages = {
       testTitle: '通知测试',
       testBody: '恭喜！通知功能已成功启用。',
     },
+    network: {
+      retrying: '正在重试 {endpoint}，第 {attempt}/{max} 次',
+      refreshingInbound: '正在刷新线路...',
+      inboundRefreshed: '线路刷新完成',
+      requestFailed: '请求失败，正在尝试重新连接',
+      connectionRestored: '连接已恢复',
+    },
   },
   'en-US': {
     appName: 'Cursor Pool',
@@ -299,7 +306,7 @@ export const messages = {
       newVersionAvailable: '发现新版本',
       currentVersion: '当前版本',
       newVersion: '最新版本',
-      later: '稍后更新',
+      later: 'Mettre à jour plus tard',
       downloadNow: '立即下载',
       unusedCreditsWarning: 'Usage Reminder',
       unusedCreditsMessage:
@@ -509,6 +516,13 @@ export const messages = {
     notification: {
       testTitle: 'Notification Test',
       testBody: 'Congratulations! Notification function has been successfully enabled.',
+    },
+    network: {
+      retrying: 'Retrying {endpoint}, attempt {attempt}/{max}',
+      refreshingInbound: 'Refreshing inbound route...',
+      inboundRefreshed: 'Inbound route refreshed',
+      requestFailed: 'Request failed, retrying connection',
+      connectionRestored: 'Connection restored',
     },
   },
   'ja-JP': {
@@ -757,6 +771,13 @@ export const messages = {
     notification: {
       testTitle: '通知テスト',
       testBody: 'おめでとうございます！通知機能が正常に有効になりました。',
+    },
+    network: {
+      retrying: '再試行中 {endpoint}，第 {attempt}/{max} 回',
+      refreshingInbound: 'ルートを更新中...',
+      inboundRefreshed: 'ルート更新完了',
+      requestFailed: '要求失敗、再接続を試みています',
+      connectionRestored: '接続が回復しました',
     },
   },
   'fr-FR': {
@@ -1013,6 +1034,13 @@ export const messages = {
       testTitle: 'Test de Notification',
       testBody: 'Félicitations ! La fonction de notification a été activée avec succès.',
     },
+    network: {
+      retrying: 'Réessayant {endpoint}, essai {attempt}/{max}',
+      refreshingInbound: 'Mise à jour de la route...',
+      inboundRefreshed: 'Route mise à jour terminée',
+      requestFailed: 'Échec de la requête, réessayage de la connexion',
+      connectionRestored: 'Connexion restaurée',
+    },
   },
   'de-DE': {
     appName: 'Cursor Pool',
@@ -1263,6 +1291,13 @@ export const messages = {
       testTitle: 'Benachrichtigungstest',
       testBody: 'Glückwunsch! Die Benachrichtigungsfunktion wurde erfolgreich aktiviert.',
     },
+    network: {
+      retrying: 'Wiederholt {endpoint}, Versuch {attempt}/{max}',
+      refreshingInbound: 'Route wird aktualisiert...',
+      inboundRefreshed: 'Route aktualisiert',
+      requestFailed: 'Anfrage fehlgeschlagen, erneuter Versuch',
+      connectionRestored: 'Verbindung wiederhergestellt',
+    },
   },
   'ko-KR': {
     appName: 'Cursor Pool',
@@ -1509,6 +1544,13 @@ export const messages = {
     notification: {
       testTitle: '알림 테스트',
       testBody: '축하합니다! 알림 기능이 성공적으로 활성화되었습니다.',
+    },
+    network: {
+      retrying: '다시 시도중 {endpoint}，{attempt}/{max} 번째',
+      refreshingInbound: '라우트 새로고침 중...',
+      inboundRefreshed: '라우트 새로고침 완료',
+      requestFailed: '요청 실패, 재연결 시도 중',
+      connectionRestored: '연결 복구됨',
     },
   },
   'ru-RU': {
@@ -1760,6 +1802,13 @@ export const messages = {
       testTitle: 'Тест уведомления',
       testBody: 'Поздравляем! Функция уведомлений успешно включена.',
     },
+    network: {
+      retrying: 'Повторная попытка {endpoint}, попытка {attempt}/{max}',
+      refreshingInbound: 'Обновление маршрута...',
+      inboundRefreshed: 'Маршрут обновлен',
+      requestFailed: 'Запрос не удался, повторная попытка',
+      connectionRestored: 'Соединение восстановлено',
+    },
   },
   'es-AR': {
     appName: 'Cursor Pool',
@@ -2009,6 +2058,13 @@ export const messages = {
     notification: {
       testTitle: 'Prueba de Notificación',
       testBody: '¡Felicidades! La función de notificación se ha habilitado con éxito.',
+    },
+    network: {
+      retrying: 'Reintentando {endpoint}, intento {attempt}/{max}',
+      refreshingInbound: 'Actualizando ruta...',
+      inboundRefreshed: 'Ruta actualizada',
+      requestFailed: 'Solicitud fallida, reintentando conexión',
+      connectionRestored: 'Conexión restaurada',
     },
   },
 } as const

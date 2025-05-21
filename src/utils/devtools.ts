@@ -41,22 +41,16 @@ export class DevToolsManager {
 
     // 禁用常见开发者工具快捷键
     document.addEventListener('keydown', (e) => {
-      // 检查是否在 /settings 路由
-      const isInSettings = window.location.pathname === '/settings'
+      this.konamiCode.push(e.key)
+      if (this.konamiCode.length > this.konamiSequence.length) {
+        this.konamiCode.shift()
+      }
 
-      // 记录输入的按键序列
-      if (isInSettings) {
-        this.konamiCode.push(e.key)
-        if (this.konamiCode.length > this.konamiSequence.length) {
-          this.konamiCode.shift()
-        }
-
-        // 检查是否匹配konami代码
-        if (this.checkKonamiCode()) {
-          openDevTools()
-          this.konamiCode = []
-          return
-        }
+      // 检查是否匹配konami代码
+      if (this.checkKonamiCode()) {
+        openDevTools()
+        this.konamiCode = []
+        return
       }
 
       // 禁用各种开发者工具快捷键

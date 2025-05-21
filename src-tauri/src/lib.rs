@@ -170,6 +170,8 @@ pub fn run() {
             cursor_reset::commands::close_cursor,
             cursor_reset::commands::launch_cursor,
             cursor_reset::commands::find_cursor_path,
+            // 线路管理
+            cursor_reset::commands::refresh_inbound,
             // 日志
             cursor_reset::commands::log_error,
             cursor_reset::commands::log_warn,

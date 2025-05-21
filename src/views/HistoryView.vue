@@ -26,7 +26,6 @@
       message.success(i18n.value.history.clearSuccess)
     } catch (error) {
       message.error(i18n.value.history.clearFailed)
-      console.error('清除历史记录失败:', error)
     } finally {
       isLoading.value = false
     }
@@ -38,7 +37,6 @@
     try {
       await historyStore.loadHistoryRecords()
     } catch (error) {
-      console.error('加载历史记录失败:', error)
       message.error('加载历史记录失败')
     } finally {
       isLoading.value = false

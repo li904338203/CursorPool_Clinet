@@ -33,8 +33,6 @@ export async function addHistoryRecord(type: string, detail: string) {
     // 触发更新事件
     window.dispatchEvent(new Event('history_updated'))
   } catch (error) {
-    console.error('保存历史记录到后端失败，回退到本地存储:', error)
-
     // 如果后端保存失败，回退到本地存储
     const history: HistoryRecords = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]')
     history.unshift(newRecord)
@@ -63,8 +61,6 @@ export async function getHistoryList(): Promise<HistoryRecords> {
       operator: record.operator,
     }))
   } catch (error) {
-    console.error('从后端获取历史记录失败，回退到本地存储:', error)
-
     // 如果后端获取失败，回退到本地存储
     return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]')
   }
@@ -101,9 +97,7 @@ export async function syncLocalHistoryToBackend() {
 
     // 批量保存到后端
     await saveHistoryRecords(backendRecords)
-    console.log(`成功同步 ${records.length} 条本地历史记录到后端`)
   } catch (error) {
-    console.error('同步本地历史记录到后端失败:', error)
     // 即使同步失败，也清除本地存储，避免重复同步
   } finally {
     // 无论成功失败，都清除本地存储

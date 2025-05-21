@@ -120,7 +120,7 @@ export const useCursorStore = defineStore('cursor', () => {
     } catch (error) {
       // 仅记录日志，不影响主流程
       await Logger.info(`获取Cursor使用情况失败，但不影响${operationName}流程`)
-      console.error(`获取Cursor使用情况失败:`, error)
+      Logger.error(`获取Cursor使用情况失败: ${error}`)
       return false
     }
   }
@@ -143,7 +143,7 @@ export const useCursorStore = defineStore('cursor', () => {
 
       return result
     } catch (error) {
-      console.error('获取机器码失败:', error)
+      Logger.error(`获取机器码失败: ${error}`)
       throw error
     } finally {
       isLoading.value = false
@@ -161,15 +161,13 @@ export const useCursorStore = defineStore('cursor', () => {
           // 获取机器码信息，但失败不阻止后续流程
           await fetchMachineIds()
         } catch (error) {
-          // 只记录错误但继续尝试使用现有token
-          console.error('获取机器码信息失败，但仍尝试获取使用量:', error)
           await Logger.warn('获取机器码信息失败，但仍尝试获取使用量')
         }
       }
 
       // 检查token是否可用
       if (!cursorToken.value) {
-        console.error('未找到 Cursor Token')
+        Logger.error('未找到 Cursor Token')
         // 设置错误类型为数据库错误，但保留现有的usage数据
         cursorInfo.value = {
           userInfo: cursorInfo.value?.userInfo,
@@ -203,8 +201,6 @@ export const useCursorStore = defineStore('cursor', () => {
           errorType: null,
         }
       } catch (usageError) {
-        console.error('获取 Cursor 使用量失败:', usageError)
-
         // 设置适当的错误类型，但保留现有数据
         const errorMsg = usageError instanceof Error ? usageError.message : String(usageError)
         cursorInfo.value = {
@@ -399,7 +395,7 @@ export const useCursorStore = defineStore('cursor', () => {
         }
 
         // 其他错误情况下重置状态
-        console.error('检查Hook状态失败:', error)
+        Logger.error(`检查Hook状态失败: ${error}`)
         hookStatus.value = null
         throw error
       }
@@ -553,7 +549,7 @@ export const useCursorStore = defineStore('cursor', () => {
       operationLoading.value = true
       return await closeCursor()
     } catch (error) {
-      console.error('关闭 Cursor 失败:', error)
+      Logger.error(`关闭 Cursor 失败: ${error}`)
       throw error
     } finally {
       operationLoading.value = false
@@ -568,7 +564,7 @@ export const useCursorStore = defineStore('cursor', () => {
       operationLoading.value = true
       return await launchCursor()
     } catch (error) {
-      console.error('启动 Cursor 失败:', error)
+      Logger.error(`启动 Cursor 失败: ${error}`)
       throw error
     } finally {
       operationLoading.value = false
@@ -601,7 +597,7 @@ export const useCursorStore = defineStore('cursor', () => {
 
       return true
     } catch (error) {
-      console.error('刷新数据失败:', error)
+      Logger.error(`刷新数据失败: ${error}`)
       throw error
     } finally {
       isLoading.value = false
@@ -658,7 +654,7 @@ export const useCursorStore = defineStore('cursor', () => {
         status: 'success',
       }
     } catch (error) {
-      console.error('切换到历史账户失败:', error)
+      Logger.error(`切换到历史账户失败: ${error}`)
       throw error
     } finally {
       historyStore.switchingAccount[account.email] = false
@@ -710,7 +706,7 @@ export const useCursorStore = defineStore('cursor', () => {
 
       return { status: 'success' }
     } catch (error) {
-      console.error('强制切换账户失败:', error)
+      Logger.error(`强制切换账户失败: ${error}`)
       throw error
     } finally {
       needSaveCurrentAccount.value = false
@@ -784,7 +780,7 @@ export const useCursorStore = defineStore('cursor', () => {
             // 强制重新获取Hook状态以刷新UI
             await checkHook()
           } catch (actionError) {
-            console.error('执行操作失败:', actionError)
+            Logger.error(`执行操作失败: ${actionError}`)
             fileSelectError.value =
               '执行操作失败: ' +
               (actionError instanceof Error ? actionError.message : String(actionError))
@@ -797,7 +793,7 @@ export const useCursorStore = defineStore('cursor', () => {
         throw new Error('无法验证所选择的文件路径')
       }
     } catch (error) {
-      console.error('文件选择处理错误:', error)
+      Logger.error(`文件选择处理错误: ${error}`)
       fileSelectError.value = error instanceof Error ? error.message : String(error)
       fileSelectLoading.value = false
     }
@@ -862,8 +858,7 @@ export const useCursorStore = defineStore('cursor', () => {
           await launchCursorApp()
           await Logger.info('Cursor已重新启动')
         } catch (launchError) {
-          console.error('重新启动Cursor失败:', launchError)
-          await Logger.error(`重新启动Cursor失败: ${launchError}`)
+          Logger.error(`重新启动Cursor失败: ${launchError}`)
         }
 
         return true
@@ -872,14 +867,13 @@ export const useCursorStore = defineStore('cursor', () => {
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error)
-      console.error('注入失败:', errorMsg)
       await Logger.error(`注入正在运行的Cursor失败: ${errorMsg}`)
 
       // 如果操作失败，尝试更新hook状态以确保UI显示正确
       try {
         await checkHook()
       } catch (checkError) {
-        console.error('检查Hook状态也失败:', checkError)
+        Logger.error(`检查Hook状态也失败: ${checkError}`)
       }
 
       throw error
@@ -902,11 +896,11 @@ export const useCursorStore = defineStore('cursor', () => {
       if (result.code === 0) {
         return true
       } else {
-        console.error('打开macOS权限设置失败，错误码:', result.code)
+        Logger.error(`打开macOS权限设置失败，错误码: ${result.code}`)
         return false
       }
     } catch (error) {
-      console.error('打开macOS权限设置失败:', error)
+      Logger.error(`打开macOS权限设置失败: ${error}`)
       return false
     }
   }

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { check } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { open } from '@tauri-apps/plugin-shell'
+import Logger from '@/utils/logger'
 
 export const useUpdaterStore = defineStore('updater', () => {
   // 状态
@@ -34,6 +35,7 @@ export const useUpdaterStore = defineStore('updater', () => {
       error.value = null
 
       const update = await check()
+      Logger.info(`更新信息: ${JSON.stringify(update)}`)
 
       if (update) {
         hasUpdate.value = true
@@ -91,7 +93,7 @@ export const useUpdaterStore = defineStore('updater', () => {
         error.value = `检查更新失败: ${errorMessage}`
       }
 
-      console.error('更新错误:', error.value)
+      Logger.error(`更新错误: ${error.value}`)
     } finally {
       isChecking.value = false
     }
@@ -147,9 +149,6 @@ export const useUpdaterStore = defineStore('updater', () => {
       // 统一错误消息格式
       const errorMessage = err instanceof Error ? err.message : String(err)
 
-      // 改进错误处理，显示更详细的安装错误
-      console.error('安装更新完整错误:', err)
-
       if (err instanceof Error) {
         // 保存完整错误信息
         error.value = `安装错误: ${err.message}\n${err.stack || ''}`
@@ -178,7 +177,7 @@ export const useUpdaterStore = defineStore('updater', () => {
         error.value = `更新安装失败: ${errorMessage}`
       }
 
-      console.error('更新安装错误:', error.value)
+      Logger.error(`更新安装错误: ${error.value}`)
     }
   }
 
@@ -187,7 +186,6 @@ export const useUpdaterStore = defineStore('updater', () => {
     try {
       await open('https://pool.52ai.org')
     } catch (err) {
-      console.error('打开网站失败:', err)
       error.value = `无法打开官网: ${err instanceof Error ? err.message : String(err)}`
     }
   }

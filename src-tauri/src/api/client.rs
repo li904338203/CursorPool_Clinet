@@ -82,42 +82,7 @@ impl ApiClient {
             }
         }
 
-        // 检查请求是否可克隆
-        let can_clone = request.try_clone().is_some();
-        
-        if can_clone {
-            // 第一次尝试
-            let cloned_request = request.try_clone().unwrap();
-            let result = self.client.execute(cloned_request).await;
-            
-            if let Ok(response) = result {
-                return self.process_response(response, &method.to_string(), &url).await;
-            }
-            
-            let err = result.unwrap_err();
-            error!(
-                target: "http_client",
-                "第一次请求失败 - 方法: {}, URL: {}, 错误: {}",
-                method, url, err
-            );
-            
-            // 第二次尝试
-            let cloned_request = request.try_clone().unwrap();
-            let result = self.client.execute(cloned_request).await;
-            
-            if let Ok(response) = result {
-                return self.process_response(response, &method.to_string(), &url).await;
-            }
-            
-            let err = result.unwrap_err();
-            error!(
-                target: "http_client",
-                "第二次请求失败 - 方法: {}, URL: {}, 错误: {}",
-                method, url, err
-            );
-        }
-        
-        // 第三次尝试 (对于注册请求是第一次)
+        // 执行请求
         let result = self.client.execute(request).await;
         
         match result {

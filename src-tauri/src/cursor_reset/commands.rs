@@ -11,6 +11,7 @@ use std::fs;
 use std::time::Duration;
 use tauri::State;
 use tauri::Manager;
+use tauri::Emitter;
 use tracing::error;
 use tokio;
 
@@ -122,6 +123,21 @@ pub async fn reset_machine_id(
             return Err(e);
         }
     };
+
+    // 在这里调用新的清理函数
+    if let Err(cleanup_err) = cleanup_database_entries(db.clone()).await {
+        error!(target: "reset", "数据库清理步骤失败: {}", cleanup_err);
+        ErrorReporter::report_error(
+            client.clone(),
+            "reset_machine_id_cleanup_step",
+            &cleanup_err,
+            None,
+            Some("medium".to_string()),
+        )
+        .await;
+        return Err(format!("数据库清理失败: {}", cleanup_err));
+    }
+    error!(target: "reset", "数据库清理步骤完成");
 
     let new_ids = if let Some(id) = machine_id {
         // 生成随机 ID
@@ -266,6 +282,10 @@ pub async fn reset_machine_id(
             ("mac_id", new_ids.get("telemetry.macMachineId").unwrap()),
             ("machineId", new_ids.get("telemetry.machineId").unwrap()),
             ("sqm_id", new_ids.get("telemetry.sqmId").unwrap()),
+            (
+                "storage.serviceMachineId",
+                new_ids.get("telemetry.devDeviceId").unwrap(),
+            ),
         ];
 
         if let Err(e) = update_database(&paths.db, &updates) {
@@ -964,4 +984,139 @@ pub fn get_running_cursor_path() -> Result<String, String> {
         error!(target: "cursor", "{}", err_msg);
         return Err(err_msg);
     }
+}
+
+#[tauri::command]
+pub async fn refresh_inbound(app_handle: tauri::AppHandle) -> Result<bool, String> {
+    error!(target: "inbound", "手动触发线路刷新");
+    
+    // 重新获取线路配置并测速
+    match crate::api::inbound::init_inbound_config(&app_handle).await {
+        Ok(_) => {
+            error!(target: "inbound", "线路刷新成功完成");
+            // 通知前端刷新完成
+            if let Some(window) = app_handle.get_webview_window("main") {
+                if let Err(e) = window.emit("inbound-refreshed", ()) {
+                    error!(target: "inbound", "发送线路刷新事件失败: {}", e);
+                }
+            } else {
+                error!(target: "inbound", "无法获取主窗口实例");
+            }
+            Ok(true)
+        },
+        Err(e) => {
+            error!(target: "inbound", "线路刷新失败: {}", e);
+            Err(format!("线路刷新失败: {}", e))
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn cleanup_database_entries(
+    db_state: State<'_, Database>,
+) -> Result<(), String> {
+    error!(target: "database_cleanup", "开始清理数据库条目");
+
+    let app_paths = match AppPaths::new_with_db(Some(&db_state)) {
+        Ok(p) => p,
+        Err(e) => {
+            let err_msg = format!("获取应用路径失败: {}", e);
+            error!(target: "database_cleanup", "{}", err_msg);
+            return Err(err_msg);
+        }
+    };
+
+    let db_path = &app_paths.db;
+
+    if !db_path.exists() {
+        let err_msg = "数据库文件不存在，跳过清理".to_string();
+        error!(target: "database_cleanup", "{}", err_msg);
+        return Err(err_msg);
+    }
+
+    let conn = match Connection::open(db_path) {
+        Ok(c) => c,
+        Err(e) => {
+            let err_msg = format!("打开数据库失败: {}", e);
+            error!(target: "database_cleanup", "{}", err_msg);
+            return Err(err_msg);
+        }
+    };
+
+    let keys_to_delete = vec![
+        "src.vs.platform.reactivestorage.browser.reactiveStorageServiceImpl.persistentStorage.applicationUser",
+        "workbench.auxiliarybar.pinnedPanels",
+        "memento/mainThreadCustomEditors.origins",
+    ];
+
+    for key in keys_to_delete {
+        match conn.execute("DELETE FROM ItemTable WHERE key = ?1", [key]) {
+            Ok(rows_affected) => {
+                if rows_affected > 0 {
+                    error!(target: "database_cleanup", "成功删除键: {}", key);
+                } else {
+                    error!(target: "database_cleanup", "键不存在或删除失败: {}", key);
+                }
+            }
+            Err(e) => {
+                let err_msg = format!("删除键 {} 失败: {}", key, e);
+                error!(target: "database_cleanup", "{}", err_msg);
+            }
+        }
+    }
+
+    let patterns = vec![
+        "cursor%/machineId", 
+        "cursor%/deviceId", 
+        "cursor%/macAddress",
+        "cursor%/history%", 
+        "cursor%/cache%"
+    ];
+    
+    for pattern in patterns {
+        match conn.execute(
+            "DELETE FROM ItemTable WHERE key GLOB ?1 AND key NOT GLOB 'cursorAuth/*'", 
+            [pattern],
+        ) {
+            Ok(rows_affected) => {
+                if rows_affected > 0 {
+                    error!(
+                        target: "database_cleanup", 
+                        "已删除{}个匹配'{}'的条目", 
+                        rows_affected, 
+                        pattern
+                    );
+                } else {
+                    error!(
+                        target: "database_cleanup", 
+                        "没有找到匹配'{}'的条目", 
+                        pattern
+                    );
+                }
+            }
+            Err(e) => {
+                let err_msg = format!("删除模式 {} 的条目失败: {}", pattern, e);
+                error!(target: "database_cleanup", "{}", err_msg);
+            }
+        }
+    }
+
+    let key_to_upsert = "cursorAuth/stripeMembershipType";
+    let value_to_upsert = "free_trial";
+    match conn.execute(
+        "INSERT OR REPLACE INTO ItemTable (key, value) VALUES (?1, ?2)",
+        [key_to_upsert, value_to_upsert],
+    ) {
+        Ok(_) => {
+            error!(target: "database_cleanup", "成功设置键 {} 为 {}", key_to_upsert, value_to_upsert);
+        }
+        Err(e) => {
+            let err_msg = format!("设置键 {} 失败: {}", key_to_upsert, e);
+            error!(target: "database_cleanup", "{}", err_msg);
+            return Err(err_msg);
+        }
+    }
+
+    error!(target: "database_cleanup", "数据库条目清理完成");
+    Ok(())
 }

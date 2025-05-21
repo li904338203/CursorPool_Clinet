@@ -5,6 +5,7 @@
   import { useInboundStore } from '../stores/inbound'
   import { useI18n } from '../locales'
   import { relaunch } from '@tauri-apps/plugin-process'
+  import Logger from '@/utils/logger'
 
   const props = defineProps({
     // 是否在紧凑布局中使用（如登录页面）
@@ -89,7 +90,7 @@
             await relaunch()
             return false
           } catch (error) {
-            console.error('重启应用失败:', error)
+            Logger.error(`重启应用失败: ${error}`)
             return false
           }
         },
